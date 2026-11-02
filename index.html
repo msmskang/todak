@@ -25,47 +25,97 @@
   /* 장면 배경: 채도를 낮춘 파스텔 */
   .scene { position:absolute; inset:0; overflow:hidden; }
   .meadow  { background:linear-gradient(#F5F0E7 0 64%, #DDE6CE 64% 100%); }
-  .meadow2 { background:linear-gradient(#F5F0E7 0 84%, #DDE6CE 84% 100%); }
+  .meadow2 { background:linear-gradient(#F5F0E7 0 86%, #DDE6CE 86% 100%); }
+  .mapbg   { background:#E5ECD9; }
   .match   { background:#F5F0E7; }
+  .kitchen { background:linear-gradient(#F5F0E7 0 64%, #ECDFCB 64% 100%); }
+  .bathroom { background:
+      repeating-linear-gradient(0deg, transparent 0 10vmin, rgba(196,208,214,.35) 10vmin calc(10vmin + 2px)),
+      repeating-linear-gradient(90deg, transparent 0 10vmin, rgba(196,208,214,.35) 10vmin calc(10vmin + 2px)), #EEF2F1; }
+  .sky     { background:linear-gradient(#EAF0F4 0 86%, #DDE6CE 86% 100%); }
+  .evening { background:linear-gradient(#E3DCEB, #EDE6E2); }
   .dusk    { background:linear-gradient(#E8E1EC, #D9D3E3); }
   .rest    { background:linear-gradient(#DED8E5, #D0CADB); }
   .sun  { position:absolute; left:9%; top:9%; width:14vmin; height:14vmin; border-radius:50%; background:#F6E4BC; opacity:.8; }
   .moon { position:absolute; right:11%; top:11%; width:11vmin; height:11vmin; border-radius:50%; background:#F4ECD6;
           box-shadow:0 0 0 2vmin rgba(244,236,214,.35); }
   .full { position:absolute; left:0; top:0; }
+  svg { display:block; }
 
   .hint { position:absolute; left:0; right:0; top:calc(env(safe-area-inset-top) + 12px); padding:0 64px;
           text-align:center; font-size:14px; line-height:1.4; color:var(--soft); pointer-events:none; z-index:6; }
   .hint small { display:block; font-size:11px; opacity:.8; }
+  .homeBtn { position:absolute; left:12px; top:calc(env(safe-area-inset-top) + 10px); width:46px; height:46px; border-radius:50%;
+             background:rgba(255,253,248,.85); box-shadow:0 0 0 1.5px #E3D6C4; padding:10px; z-index:7; }
 
-  /* 동물 얼굴: 움직임은 모두 1초 이상 걸리는 느린 동작 */
+  /* 동물 얼굴: 움직임은 모두 1초 안팎의 느린 동작 */
   .face { width:100%; height:100%; transform-origin:50% 85%; transition:transform .25s ease; }
-  .face svg { display:block; width:100%; height:100%; }
+  .face svg { width:100%; height:100%; }
   .face.wiggle { animation:wiggle 1.2s ease-in-out 1; }
   .face.wave   { animation:wiggle 1.4s ease-in-out 2; }
   .face.nudge  { animation:nudge .8s ease-in-out 1; }
   @keyframes wiggle { 0%,100% { transform:rotate(0); } 25% { transform:rotate(-7deg); } 75% { transform:rotate(7deg); } }
   @keyframes nudge  { 0%,100% { transform:translateX(0); } 50% { transform:translateX(7%); } }
 
-  /* 까꿍 동물 친구 */
+  /* 지도 */
+  .node { border-radius:50%; background:#FFFDF8; box-shadow:0 0 0 .9vmin #E6D8C2; transition:opacity 1s ease, box-shadow 1s ease; }
+  .node .face { position:absolute; inset:14%; width:auto; height:auto; }
+  .node svg { width:100%; height:100%; }
+  .node.dim { opacity:.35; pointer-events:none; }
+  .node.glow { box-shadow:0 0 0 1.8vmin #F3E2B0; }
+  .nodeLabel { position:absolute; text-align:center; font-size:13px; color:#8A7A69; white-space:nowrap; pointer-events:none; transition:opacity 1s ease; }
+  .nodeLabel.dim { opacity:.35; }
+  .paw { position:absolute; right:-6%; top:-6%; width:34%; height:34%; }
+
+  /* 까꿍 */
   .hole { position:absolute; overflow:hidden; pointer-events:none; }
   .peeker { position:absolute; left:0; bottom:0; transform:translateY(105%); pointer-events:auto;
             transition:transform 1.6s cubic-bezier(.3,.7,.3,1); }
   .peeker.up { transform:translateY(-12%); }
-  .bush svg, .basket svg, .shadow svg { display:block; width:100%; height:100%; }
+  .cover svg, .basket svg, .shadow svg, .tub svg, .shower svg, .roof svg { width:100%; height:100%; }
 
-  /* 데굴데굴 구슬 */
+  /* 구슬 */
   .ball { position:absolute; left:0; top:0; z-index:2; }
   .ball .face { transform-origin:50% 50%; }
   .basket { z-index:3; pointer-events:none; }
   .sitter { z-index:1; }
 
-  /* 그림자 짝 맞추기 */
+  /* 끌어다 놓기(짝 맞추기, 먹이 주기) */
   .shadow { transition:opacity .8s ease; }
   .shadow.filled { opacity:.35; }
   .drag { position:absolute; left:0; top:0; z-index:2; }
   .drag.lift { z-index:5; }
   .drag.lift .face { transform:scale(1.08); }
+  .plate { border-radius:50%; background:#FBF8F3; box-shadow:0 0 0 .6vmin #E9DDCB; }
+
+  /* 목욕 */
+  .tub { z-index:3; pointer-events:none; }
+  .rub { z-index:4; }
+  .foam { position:absolute; border-radius:50%; z-index:4; pointer-events:none;
+          background:radial-gradient(circle at 35% 35%, #fff 0 45%, #EAF1F6 100%); box-shadow:0 0 0 1px #E3EBF1;
+          transform:scale(.2); transition:transform .4s ease, opacity 1.2s ease; }
+  .foam.on { transform:scale(1); }
+  .mud { position:absolute; border-radius:50%; background:rgba(150,116,86,.42); z-index:2; pointer-events:none; transition:opacity 1.4s ease; }
+  .shower { z-index:5; opacity:.45; transition:opacity 1s ease; }
+  .shower.ready { opacity:1; }
+  .drop { position:absolute; width:1.4vmin; height:2.4vmin; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; background:#A9C6DC; z-index:5; pointer-events:none; }
+
+  /* 비눗방울 */
+  .bubble { position:absolute; z-index:3; }
+  .bub { width:100%; height:100%; border-radius:50%; transform:scale(.2); transition:transform .6s ease, opacity .35s ease;
+         background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.95) 0 9%, rgba(255,255,255,.2) 11%, rgba(205,222,238,.25) 62%, rgba(221,205,236,.5) 100%);
+         box-shadow:inset 0 0 0 1.5px rgba(168,188,214,.7); }
+  .bub.on { transform:scale(1); }
+  .bub.pop { transform:scale(1.35); opacity:0; }
+
+  /* 불 켜기 집 */
+  .wall { background:#F1E6D6; border-radius:1.5vmin; box-shadow:inset 0 0 0 .8vmin #E2D2BC; }
+  .door { background:#CDA986; border-radius:3vmin 3vmin .6vmin .6vmin; }
+  .win { overflow:hidden; border-radius:1.6vmin; background:#A9B1C5; box-shadow:inset 0 0 0 1vmin #E7D9C4; }
+  .win .glow { position:absolute; inset:0; background:#F7E4AE; opacity:0; transition:opacity 1.2s ease; }
+  .win.on .glow { opacity:1; }
+  .win .wa { position:absolute; bottom:0; transform:translateY(105%); transition:transform 1.4s cubic-bezier(.3,.7,.3,1); }
+  .win.on .wa { transform:translateY(14%); }
 
   /* 잘 자 인사 */
   .bed { background:#EFE3D1; box-shadow:inset 0 0 0 1vmin #DAC1A0; border-radius:3vmin; overflow:hidden; }
@@ -141,10 +191,14 @@
     <details>
       <summary>놀이 뒤에 이어서 할 실물 놀이</summary>
       <ul>
-        <li>까꿍 동물 친구 뒤: 수건 뒤에 인형을 숨기고 까꿍 놀이</li>
-        <li>데굴데굴 구슬 뒤: 바닥에서 공 주고받기, 쿠션으로 비탈 만들어 굴리기</li>
-        <li>그림자 짝 맞추기 뒤: 손전등으로 벽에 인형 그림자 만들기</li>
-        <li>잘 자 인사 뒤: 인형에게 이불 덮어 주고 토닥토닥 재우기</li>
+        <li>까꿍 숲 뒤: 수건 뒤에 인형을 숨기고 까꿍 놀이</li>
+        <li>구슬 언덕 뒤: 바닥에서 공 주고받기, 쿠션으로 비탈 만들어 굴리기</li>
+        <li>그림자 놀이 뒤: 손전등으로 벽에 인형 그림자 만들기</li>
+        <li>냠냠 식당 뒤: 장난감 과일로 인형에게 밥 주기</li>
+        <li>보글 목욕탕 뒤: 목욕 시간에 인형도 같이 씻기기</li>
+        <li>비눗방울 뒤: 실제 비눗방울 불기</li>
+        <li>불 켜기 집 뒤: 방 스위치를 같이 켜고 끄며 "불 켜졌다" 말해 주기</li>
+        <li>잘 자 방 뒤: 인형에게 이불 덮어 주고 토닥토닥 재우기</li>
       </ul>
       <p>화면이 꺼진 직후에는 양치나 정리를 바로 시키지 말고, 안아 주기나 담요 만지기처럼 차분한 활동을 먼저 해 주세요.</p>
     </details>
@@ -169,8 +223,14 @@ const settings = { minutes: store.get('minutes', 10), hints: store.get('hints', 
 const todayKey = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
 const isRestDay = () => store.get('doneDate', null) === todayKey();
 
-const state = { start: 0, sceneIdx: 0, round: 0, met: [], timers: [], cur: null };
-const KINDS = ['dog', 'cat', 'rabbit', 'duck'];
+const state = { start: 0, met: [], visits: {}, visited: new Set(), timers: [], cur: null };
+
+const KINDS = ['dog', 'cat', 'rabbit', 'duck', 'bear', 'pig', 'elephant', 'lion', 'sheep'];
+const NAME = { dog: '강아지', cat: '고양이', rabbit: '토끼', duck: '오리', bear: '곰', pig: '돼지', elephant: '코끼리', lion: '사자', sheep: '양' };
+const TRAIT = { dog: '강아지는 귀가 축 늘어졌지?', cat: '고양이 귀는 뾰족뾰족', rabbit: '토끼는 귀가 길지?', duck: '오리는 머리에 깃털이 있네',
+  bear: '곰은 귀가 동글동글', pig: '돼지 코는 동그랗지?', elephant: '코끼리는 코가 길지?', lion: '사자는 머리털이 복슬복슬', sheep: '양은 털이 몽실몽실' };
+// 그림자 모양이 비슷한 동물은 한 판에 같이 내지 않음
+const LOOKALIKE = ['bear', 'pig', 'duck'];
 
 /* ---------- 소리: 녹음 파일 없이 작고 부드러운 나무 장난감 느낌의 소리만 ---------- */
 let ac = null, master = null;
@@ -203,13 +263,18 @@ const sfx = {
   roll(ms) { for (let i = 0; i < ms / 240; i++) tone(170 + Math.random() * 30, 0.05, { type: 'triangle', gain: 0.045, delay: i * 0.24 }); },
   drop() { tone(300, 0.15, { type: 'triangle', gain: 0.14 }); tone(240, 0.18, { type: 'triangle', gain: 0.1, delay: 0.15 }); },
   snap() { tone(440, 0.25, { gain: 0.09 }); tone(660, 0.35, { gain: 0.06, delay: 0.12 }); },
+  munch() { for (let i = 0; i < 4; i++) tone(210, 0.08, { type: 'triangle', gain: 0.08, delay: i * 0.26 }); },
+  pop()  { tone(760, 0.12, { glide: 520, gain: 0.07 }); },
+  blub() { tone(260, 0.16, { glide: 380, gain: 0.06 }); },
+  water() { for (let i = 0; i < 14; i++) tone(900 + Math.random() * 500, 0.05, { gain: 0.025, delay: i * 0.1 }); },
+  light() { tone(523, 0.4, { gain: 0.07 }); tone(659, 0.5, { gain: 0.05, delay: 0.15 }); },
   lullaby() { [523, 440, 392, 330].forEach((f, i) => tone(f, 1.3, { gain: 0.06, delay: i * 0.7 })); }
 };
 ['pointerdown', 'touchend', 'click'].forEach(t => document.addEventListener(t, audioInit, { passive: true }));
 
-/* ---------- 그림: 동물 얼굴 4종. shadow는 짝 맞추기용 그림자, sleep은 눈 감은 얼굴 ---------- */
+/* ---------- 그림: 동물 얼굴 9종. shadow는 그림자, sleep은 눈 감은 얼굴, munch는 입 벌린 얼굴 ---------- */
 const SH = '#D5CABE', EYE = '#5B4B40';
-function animalSVG(kind, { shadow = false, sleep = false } = {}) {
+function animalSVG(kind, { shadow = false, sleep = false, munch = false } = {}) {
   const c = v => shadow ? SH : v;
   let s = '';
   if (kind === 'dog') {
@@ -233,24 +298,92 @@ function animalSVG(kind, { shadow = false, sleep = false } = {}) {
     s += `<path d="M50 27 C43 14 52 7 57 13 C52 14 51 20 55 27 Z" fill="${c('#EBCB6E')}"/>`
        + `<circle cx="50" cy="55" r="30" fill="${c('#F3DE8E')}"/>`;
     if (!shadow) s += `<ellipse cx="50" cy="65" rx="14" ry="6.5" fill="#E8A960"/><path d="M37 65 Q50 69 63 65" stroke="#D08F4A" stroke-width="1.4" fill="none"/>`;
+  } else if (kind === 'bear') {
+    s += `<circle cx="25" cy="31" r="12" fill="${c('#B58C6B')}"/><circle cx="75" cy="31" r="12" fill="${c('#B58C6B')}"/>`;
+    if (!shadow) s += `<circle cx="25" cy="31" r="6" fill="#D9B796"/><circle cx="75" cy="31" r="6" fill="#D9B796"/>`;
+    s += `<circle cx="50" cy="57" r="30" fill="${c('#C9A27F')}"/>`;
+    if (!shadow) s += `<ellipse cx="50" cy="69" rx="12" ry="9" fill="#EAD5BC"/><ellipse cx="50" cy="65" rx="5" ry="3.6" fill="${EYE}"/>`;
+  } else if (kind === 'pig') {
+    s += `<ellipse cx="19" cy="36" rx="10" ry="7" transform="rotate(-30 19 36)" fill="${c('#EDB5AF')}"/>`
+       + `<ellipse cx="81" cy="36" rx="10" ry="7" transform="rotate(30 81 36)" fill="${c('#EDB5AF')}"/>`
+       + `<circle cx="50" cy="57" r="30" fill="${c('#F4CBC5')}"/>`;
+    if (!shadow) s += `<ellipse cx="50" cy="68" rx="11" ry="8" fill="#EBB0A9"/><ellipse cx="46" cy="68" rx="2" ry="3" fill="#C58C85"/><ellipse cx="54" cy="68" rx="2" ry="3" fill="#C58C85"/>`;
+  } else if (kind === 'elephant') {
+    s += `<ellipse cx="20" cy="52" rx="17" ry="23" fill="${c('#B8BFCC')}"/><ellipse cx="80" cy="52" rx="17" ry="23" fill="${c('#B8BFCC')}"/>`;
+    if (!shadow) s += `<ellipse cx="22" cy="53" rx="10" ry="15" fill="#E3C3C6" opacity=".6"/><ellipse cx="78" cy="53" rx="10" ry="15" fill="#E3C3C6" opacity=".6"/>`;
+    s += `<circle cx="50" cy="50" r="25" fill="${c('#CBD0D9')}"/>`
+       + `<path d="M43 62 C42 80 46 92 58 92 C63 92 64 86 59 86 C53 86 52 78 57 62 Z" fill="${c('#CBD0D9')}"/>`;
+    if (!shadow) s += `<path d="M45 72 h8 M46 79 h8" stroke="#B3B9C5" stroke-width="1.3" stroke-linecap="round"/>`;
+  } else if (kind === 'lion') {
+    let mane = `<circle cx="50" cy="55" r="32" fill="${c('#DDB06C')}"/>`;
+    for (let i = 0; i < 12; i++) {
+      const a = i * Math.PI / 6;
+      mane += `<circle cx="${(50 + 31 * Math.cos(a)).toFixed(1)}" cy="${(55 + 31 * Math.sin(a)).toFixed(1)}" r="11" fill="${c('#DDB06C')}"/>`;
+    }
+    s += mane;
+    if (!shadow) s += `<circle cx="31" cy="36" r="6" fill="#E9C088"/><circle cx="69" cy="36" r="6" fill="#E9C088"/>`;
+    s += `<circle cx="50" cy="56" r="25" fill="${c('#F1D39E')}"/>`;
+    if (!shadow) s += `<ellipse cx="50" cy="67" rx="10" ry="7" fill="#F9E9CB"/><path d="M46.5 62.5 L53.5 62.5 L50 66 Z" fill="#A9775B"/>`;
+  } else if (kind === 'sheep') {
+    const wool = shadow ? '' : ' stroke="#E7DDD1" stroke-width="1.5"';
+    [[32, 34], [50, 26], [68, 34], [24, 50], [76, 50], [30, 67], [70, 67], [50, 76]].forEach(([x, y]) => {
+      s += `<circle cx="${x}" cy="${y}" r="12" fill="${c('#FBF7F0')}"${wool}/>`;
+    });
+    s += `<ellipse cx="25" cy="58" rx="10" ry="5" transform="rotate(15 25 58)" fill="${c('#CDB9A6')}"/>`
+       + `<ellipse cx="75" cy="58" rx="10" ry="5" transform="rotate(-15 75 58)" fill="${c('#CDB9A6')}"/>`
+       + `<ellipse cx="50" cy="60" rx="19" ry="22" fill="${c('#DCC9B6')}"/>`
+       + `<circle cx="42" cy="40" r="8" fill="${c('#FBF7F0')}"/><circle cx="50" cy="37" r="9" fill="${c('#FBF7F0')}"/><circle cx="58" cy="40" r="8" fill="${c('#FBF7F0')}"/>`;
+    if (!shadow) s += `<path d="M47 68 L53 68 L50 71 Z" fill="#9C7F6A"/>`;
   }
   if (!shadow) {
-    const ey = { dog: 51, cat: 53, rabbit: 58, duck: 49 }[kind];
-    s += `<circle cx="31" cy="${ey + 11}" r="5" fill="#F0B4A4" opacity=".4"/><circle cx="69" cy="${ey + 11}" r="5" fill="#F0B4A4" opacity=".4"/>`;
+    const ey = { dog: 51, cat: 53, rabbit: 58, duck: 49, bear: 52, pig: 51, elephant: 47, lion: 52, sheep: 58 }[kind];
+    const cx = { sheep: 37, elephant: 33, lion: 34 }[kind] || 31;
+    s += `<circle cx="${cx}" cy="${ey + 11}" r="5" fill="#F0B4A4" opacity=".4"/><circle cx="${100 - cx}" cy="${ey + 11}" r="5" fill="#F0B4A4" opacity=".4"/>`;
     s += sleep
       ? `<path d="M35 ${ey} q4 3.5 8 0 M57 ${ey} q4 3.5 8 0" stroke="${EYE}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
       : `<circle cx="39" cy="${ey}" r="3.6" fill="${EYE}"/><circle cx="61" cy="${ey}" r="3.6" fill="${EYE}"/>`
         + `<circle cx="40.2" cy="${ey - 1.2}" r="1.1" fill="#fff"/><circle cx="62.2" cy="${ey - 1.2}" r="1.1" fill="#fff"/>`;
+    if (munch) s += `<ellipse cx="50" cy="${ey + 20}" rx="6" ry="5" fill="#8C5E52"/>`;
   }
   return `<svg viewBox="0 0 100 100" aria-hidden="true">${s}</svg>`;
 }
-const BUSH = `<svg viewBox="0 0 120 80" aria-hidden="true"><g fill="#B6CA9F"><circle cx="30" cy="50" r="26"/><circle cx="60" cy="36" r="32"/><circle cx="92" cy="50" r="26"/><rect x="8" y="48" width="104" height="32" rx="14"/></g><g fill="#A7BD8F"><circle cx="44" cy="60" r="5"/><circle cx="80" cy="57" r="4"/><circle cx="62" cy="68" r="3.5"/></g></svg>`;
+
+// 까꿍 장면에서 동물이 숨는 곳 3종
+const COVERS = {
+  bush: `<svg viewBox="0 0 120 80" aria-hidden="true"><g fill="#B6CA9F"><circle cx="30" cy="50" r="26"/><circle cx="60" cy="36" r="32"/><circle cx="92" cy="50" r="26"/><rect x="8" y="48" width="104" height="32" rx="14"/></g><g fill="#A7BD8F"><circle cx="44" cy="60" r="5"/><circle cx="80" cy="57" r="4"/><circle cx="62" cy="68" r="3.5"/></g></svg>`,
+  box: `<svg viewBox="0 0 120 80" aria-hidden="true"><path d="M10 16 L0 4 L52 4 L60 16 Z M110 16 L120 4 L68 4 L60 16 Z" fill="#D2B184"/><rect x="10" y="16" width="100" height="64" rx="4" fill="#DDBF95"/><rect x="52" y="16" width="16" height="64" fill="#E8D4B4"/></svg>`,
+  rock: `<svg viewBox="0 0 120 80" aria-hidden="true"><path d="M6 80 C2 52 20 28 46 24 C60 8 92 12 104 34 C118 44 119 68 114 80 Z" fill="#CFC8BC"/><ellipse cx="72" cy="34" rx="14" ry="6" fill="#DCD6CC"/><ellipse cx="34" cy="52" rx="8" ry="4" fill="#DCD6CC"/></svg>`
+};
 const BASKET = `<svg viewBox="0 0 100 60" aria-hidden="true"><path d="M5 9 L95 9 L85 58 L15 58 Z" fill="#DABB92"/><g stroke="#C9A67A" stroke-width="2.5" fill="none"><path d="M9 25 L91 25 M12 40 L88 40"/><path d="M30 9 L33 58 M50 9 L50 58 M70 9 L67 58"/></g><rect x="0" y="3" width="100" height="10" rx="5" fill="#C9A577"/></svg>`;
+const FOODS = {
+  apple: { name: '사과', svg: `<path d="M30 18 C22 12 8 16 9 32 C10 48 22 56 30 52 C38 56 50 48 51 32 C52 16 38 12 30 18 Z" fill="#E7A39A"/><path d="M30 18 Q31 10 34 7" stroke="#9C7A5C" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="38" cy="11" rx="6" ry="3.5" transform="rotate(-25 38 11)" fill="#AFC892"/><ellipse cx="20" cy="28" rx="4" ry="6" fill="#fff" opacity=".35"/>` },
+  banana: { name: '바나나', svg: `<path d="M10 20 C12 44 32 54 52 44 C54 42 52 39 49 40 C33 46 20 38 16 18 Z" fill="#F2D98C"/><path d="M10 20 L13 14" stroke="#B59A63" stroke-width="3" stroke-linecap="round"/>` },
+  carrot: { name: '당근', svg: `<path d="M22 20 L40 22 Q38 34 30 54 Q26 56 24 52 Q20 34 22 20 Z" fill="#EDB27C"/><path d="M26 32 h6 M27 41 h5" stroke="#D9965E" stroke-width="1.5" stroke-linecap="round"/><path d="M30 21 Q24 10 22 6 M31 21 Q31 9 33 5 M32 21 Q38 12 42 9" stroke="#A9C48E" stroke-width="3.5" fill="none" stroke-linecap="round"/>` },
+  strawberry: { name: '딸기', svg: `<path d="M30 54 C16 46 10 32 14 24 C18 18 26 20 30 22 C34 20 42 18 46 24 C50 32 44 46 30 54 Z" fill="#E89C9C"/><g fill="#F8E6C8"><circle cx="24" cy="30" r="1.3"/><circle cx="34" cy="30" r="1.3"/><circle cx="29" cy="38" r="1.3"/><circle cx="21" cy="38" r="1.3"/><circle cx="38" cy="38" r="1.3"/><circle cx="30" cy="46" r="1.3"/></g><path d="M20 21 L30 25 L40 21 L35 16 L30 19 L25 16 Z" fill="#AFC892"/>` },
+  grapes: { name: '포도', svg: `<path d="M30 14 Q31 8 35 5" stroke="#9C7A5C" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="40" cy="10" rx="6" ry="3.5" fill="#AFC892"/><g fill="#BCA9D2"><circle cx="24" cy="22" r="7"/><circle cx="36" cy="22" r="7"/><circle cx="18" cy="32" r="7"/><circle cx="30" cy="32" r="7"/><circle cx="42" cy="32" r="7"/><circle cx="24" cy="42" r="7"/><circle cx="36" cy="42" r="7"/><circle cx="30" cy="51" r="6"/></g>` }
+};
+const foodSVG = k => `<svg viewBox="0 0 60 60" aria-hidden="true">${FOODS[k].svg}</svg>`;
+const TUB = `<svg viewBox="0 0 150 60" aria-hidden="true"><circle cx="30" cy="57" r="3" fill="#D8DEE3"/><circle cx="120" cy="57" r="3" fill="#D8DEE3"/><path d="M4 6 H146 Q146 50 112 55 H38 Q4 50 4 6 Z" fill="#FFFFFF" stroke="#D8DEE3" stroke-width="2"/><rect x="0" y="0" width="150" height="10" rx="5" fill="#E9EEF2"/><g fill="#fff" stroke="#E3EBF1"><circle cx="22" cy="4" r="6"/><circle cx="34" cy="2" r="5"/><circle cx="118" cy="3" r="6"/><circle cx="129" cy="5" r="4"/></g></svg>`;
+const SHOWER = `<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M50 2 V14 Q50 22 42 22 H30" stroke="#C7CED6" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M14 26 Q24 12 36 22 L34 34 Q22 40 12 34 Z" fill="#D5DCE3"/><g fill="#B5BFCA"><circle cx="18" cy="31" r="1.5"/><circle cx="24" cy="33" r="1.5"/><circle cx="30" cy="31" r="1.5"/></g></svg>`;
+const ROOF = `<svg viewBox="0 0 120 46" aria-hidden="true"><path d="M2 46 L60 2 L118 46 Z" fill="#D9AC9C"/><path d="M14 46 L60 11 L106 46" stroke="#CF9E8D" stroke-width="2" fill="none"/></svg>`;
+const ICON = {
+  peek: `<ellipse cx="25" cy="18" rx="4" ry="10" fill="#EDE3D8"/><ellipse cx="35" cy="18" rx="4" ry="10" fill="#EDE3D8"/><g fill="#B6CA9F"><circle cx="18" cy="40" r="12"/><circle cx="30" cy="33" r="15"/><circle cx="43" cy="40" r="12"/><rect x="7" y="40" width="46" height="14" rx="7"/></g>`,
+  roll: `<path d="M6 22 H24 L52 46" stroke="#CFAE84" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="14.5" r="6" fill="#A9C4DA"/><circle cx="34" cy="25" r="6" fill="#E9B8A6"/>`,
+  match: `<g fill="#D5CABE"><ellipse cx="24" cy="17" rx="4.5" ry="11"/><ellipse cx="36" cy="17" rx="4.5" ry="11"/><circle cx="30" cy="37" r="15"/></g>`,
+  feed: FOODS.apple.svg,
+  bath: `<g fill="#fff" stroke="#DCE3EA" stroke-width="1.5"><circle cx="20" cy="27" r="6"/><circle cx="30" cy="22" r="8"/><circle cx="41" cy="27" r="6"/></g><path d="M6 30 H54 Q54 48 40 50 H20 Q6 48 6 30 Z" fill="#fff" stroke="#D3DAE0" stroke-width="2"/>`,
+  bubbles: `<g fill="rgba(214,226,240,.5)" stroke="#A9BED6" stroke-width="1.6"><circle cx="22" cy="36" r="12"/><circle cx="40" cy="22" r="9"/><circle cx="42" cy="44" r="6"/></g><circle cx="18" cy="31" r="2.5" fill="#fff"/>`,
+  house: `<path d="M10 28 L30 10 L50 28 Z" fill="#D9AC9C"/><rect x="14" y="27" width="32" height="24" rx="2" fill="#EFE3D1"/><rect x="18" y="31" width="10" height="9" rx="1.5" fill="#F5DE9E"/><rect x="32" y="31" width="10" height="9" rx="1.5" fill="#A9B1C5"/><rect x="26" y="42" width="8" height="9" fill="#C9A27F"/>`,
+  sleep: `<path d="M40 7 A12 12 0 1 0 53 21 A9 9 0 1 1 40 7 Z" fill="#EBD69A"/><rect x="8" y="33" width="44" height="14" rx="4" fill="#B8C9DD"/><ellipse cx="17" cy="32" rx="8" ry="5" fill="#FBF8F3" stroke="#E3D8C8"/><rect x="7" y="45" width="4" height="8" rx="1" fill="#D9BF9C"/><rect x="49" y="45" width="4" height="8" rx="1" fill="#D9BF9C"/>`
+};
+const HOME_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 L12 4 L20 11 M6.5 9.5 V19 H17.5 V9.5" fill="none" stroke="#A08E7C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const PAW_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#C9B193"><ellipse cx="12" cy="15.5" rx="5" ry="4"/><circle cx="6.5" cy="10" r="2"/><circle cx="10" cy="6.5" r="2"/><circle cx="14" cy="6.5" r="2"/><circle cx="17.5" cy="10" r="2"/></g></svg>`;
 
 /* ---------- 공통 도구 ---------- */
 function later(fn, ms) { const id = setTimeout(fn, ms); state.timers.push(id); return id; }
 function clearTimers() { state.timers.forEach(clearTimeout); state.timers = []; }
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const rand = a => a[Math.floor(Math.random() * a.length)];
 function dims() { const W = innerWidth, H = innerHeight; return { W, H, U: Math.min(W, H) / 100 }; }
 const px = n => n + 'px';
 function div(cls, parent, css) {
@@ -268,16 +401,69 @@ function play(el, cls) {
   el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
   el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
 }
-function onTap(el, fn) { el.addEventListener('pointerdown', e => { e.preventDefault(); fn(e); }); }
+function onTap(el, fn) { el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); fn(e); }); }
+// 받침 있는 말 뒤에는 a, 없는 말 뒤에는 b ("곰이", "강아지가")
+function josa(w, a, b) { const c = w.charCodeAt(w.length - 1) - 0xAC00; return w + (c >= 0 && c % 28 > 0 ? a : b); }
 function hint(list) {
   const h = div('hint');
   h.innerHTML = '<small>함께 말해 보세요</small>';
-  h.append(list[Math.floor(Math.random() * list.length)]);
+  h.append(`“${rand(list)}”`);
   if (!settings.hints) h.style.display = 'none';
 }
-function meet(kinds) { kinds.forEach(k => { if (!state.met.includes(k)) state.met.push(k); }); }
+function homeButton() {
+  const b = div('homeBtn');
+  b.innerHTML = HOME_SVG;
+  b.setAttribute('aria-label', '지도로');
+  onTap(b, () => { sfx.tok(); go(sceneMap); });
+}
+function meet(kinds) { kinds.forEach(k => { state.met = state.met.filter(m => m !== k); state.met.push(k); }); }
+// 동물 n마리 고르기: 제외 목록을 피하고, 그림자가 비슷한 동물은 한 마리만
+function pickKinds(n, exclude = []) {
+  const out = [];
+  for (const k of shuffle(KINDS.filter(k => !exclude.includes(k)))) {
+    if (out.length === n) break;
+    if (LOOKALIKE.includes(k) && out.some(o => LOOKALIKE.includes(o))) continue;
+    out.push(k);
+  }
+  for (const k of shuffle(KINDS)) { if (out.length < n && !out.includes(k)) out.push(k); }
+  return out;
+}
+// 같은 장소에 다시 오면 숨는 곳·구슬길 모양이 바뀌도록 방문 횟수를 셈
+function visit(id) { state.visits[id] = (state.visits[id] || 0) + 1; state.visited.add(id); return state.visits[id] - 1; }
+// 끌어다 놓기 공통: onDrop이 true를 돌려주면 처리 완료, 아니면 제자리로 돌아감
+function draggable(a, hx, hy, S, onDrop, onTapOnly) {
+  const home = `translate(${hx - S / 2}px,${hy - S / 2}px)`;
+  a.style.transform = home;
+  let drag = null;
+  a.addEventListener('pointerdown', e => {
+    if (a.dataset.locked || drag) return;
+    e.preventDefault(); e.stopPropagation();
+    try { a.setPointerCapture(e.pointerId); } catch (err) {}
+    drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, moved: false };
+    a.style.transition = 'none';
+    a.classList.add('lift');
+  });
+  a.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+    if (Math.hypot(dx, dy) > 6) drag.moved = true;
+    a.style.transform = `translate(${hx - S / 2 + dx}px,${hy - S / 2 + dy}px)`;
+  });
+  const end = e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const x = hx + e.clientX - drag.sx, y = hy + e.clientY - drag.sy, moved = drag.moved;
+    drag = null;
+    a.classList.remove('lift');
+    if (moved && onDrop(x, y)) return;
+    a.style.transition = 'transform .9s ease';
+    a.style.transform = home;
+    if (!moved && onTapOnly) onTapOnly();
+  };
+  a.addEventListener('pointerup', end);
+  a.addEventListener('pointercancel', end);
+}
 
-/* ---------- 장면 진행: 1→2→3을 돌다가 설정 시간이 지나면 진행 중인 장면이 끝날 때 잘 자 장면으로 ---------- */
+/* ---------- 장면 진행: 지도에서 장소를 고르고, 놀이가 끝나면 지도로 돌아옴 ---------- */
 let switching = false;
 function go(fn, p, { fade = true } = {}) {
   const build = () => { clearTimers(); stage.innerHTML = ''; state.cur = { fn, p: p || {} }; fn(state.cur.p); };
@@ -287,11 +473,9 @@ function go(fn, p, { fade = true } = {}) {
   fadeEl.classList.add('on');
   setTimeout(() => { build(); switching = false; requestAnimationFrame(() => fadeEl.classList.remove('on')); }, 1200);
 }
-const PLAY = [scenePeek, sceneRoll, sceneMatch];
 const timeUp = () => Date.now() - state.start >= settings.minutes * 60000;
-function sceneDone() { later(() => { if (timeUp()) go(sceneSleep); else nextScene(); }, 2600); }
-function nextScene() { state.sceneIdx++; state.round = Math.floor(state.sceneIdx / 3); go(PLAY[state.sceneIdx % 3]); }
-function startPlay() { state.start = Date.now(); state.sceneIdx = 0; state.round = 0; state.met = []; go(scenePeek); }
+function sceneDone() { later(() => go(sceneMap), 2600); }
+function startPlay() { state.start = Date.now(); state.met = []; state.visits = {}; state.visited = new Set(); go(sceneMap); }
 
 /* ---------- 시작 화면 ---------- */
 function sceneStart() {
@@ -303,14 +487,71 @@ function sceneStart() {
   $('#startBtn').addEventListener('click', () => { audioInit(); startPlay(); });
 }
 
-/* ---------- 장면 1: 까꿍 동물 친구 ---------- */
+/* ---------- 지도: 오솔길을 따라 놀이 장소 7곳 + 마지막 잘 자 방 ---------- */
+const PLACES = [
+  { id: 'peek', name: '까꿍 숲', fn: () => scenePeek },
+  { id: 'roll', name: '구슬 언덕', fn: () => sceneRoll },
+  { id: 'match', name: '그림자 놀이', fn: () => sceneMatch },
+  { id: 'feed', name: '냠냠 식당', fn: () => sceneFeed },
+  { id: 'bath', name: '보글 목욕탕', fn: () => sceneBath },
+  { id: 'bubbles', name: '비눗방울', fn: () => sceneBubbles },
+  { id: 'house', name: '불 켜기 집', fn: () => sceneHouse },
+  { id: 'sleep', name: '잘 자 방', fn: () => sceneSleep }
+];
+function mapPoints(W, H) {
+  const pts = [];
+  if (H > W) {
+    [0.2, 0.4, 0.6, 0.8].forEach((y, r) => (r % 2 ? [0.72, 0.28] : [0.28, 0.72]).forEach(x => pts.push({ x: x * W, y: y * H })));
+  } else {
+    [0.13, 0.37, 0.63, 0.87].forEach(x => pts.push({ x: x * W, y: 0.33 * H }));
+    [0.87, 0.63, 0.37, 0.13].forEach(x => pts.push({ x: x * W, y: 0.72 * H }));
+  }
+  return pts;
+}
+function smoothPath(pts) {
+  let d = `M${pts[0].x} ${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    d += ` C${p1.x + (p2.x - p0.x) / 6} ${p1.y + (p2.y - p0.y) / 6} ${p2.x - (p3.x - p1.x) / 6} ${p2.y - (p3.y - p1.y) / 6} ${p2.x} ${p2.y}`;
+  }
+  return d;
+}
+function sceneMap() {
+  const { W, H, U } = dims();
+  const sc = div('scene mapbg');
+  const pts = mapPoints(W, H), d = smoothPath(pts), late = timeUp();
+  sc.insertAdjacentHTML('beforeend', `<svg class="full" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">
+    <path d="${d}" fill="none" stroke="#E0D1BA" stroke-width="${7 * U}" stroke-linecap="round"/>
+    <path d="${d}" fill="none" stroke="#F4ECDD" stroke-width="${5.4 * U}" stroke-linecap="round"/></svg>`);
+  hint(late ? ['이제 친구들이 코 잘 시간이야', '잘 자 방에 가 볼까?'] : ['어디 가서 놀까?', '오늘은 누구 만나러 갈까?']);
+  const NS = Math.min(19 * U, H * 0.13, W * 0.2);
+  PLACES.forEach((pl, i) => {
+    const pt = pts[i], isSleep = pl.id === 'sleep';
+    const node = box(sc, pt.x, pt.y, NS, NS, 'node');
+    node.innerHTML = `<div class="face"><svg viewBox="0 0 60 60" aria-hidden="true">${ICON[pl.id]}</svg></div>`;
+    const label = div('nodeLabel', sc, { left: px(pt.x - 60), width: '120px', top: px(pt.y + NS / 2 + 1.6 * U) });
+    label.textContent = pl.name;
+    if (state.visited.has(pl.id)) div('paw', node).innerHTML = PAW_SVG;
+    if (late && !isSleep) { node.classList.add('dim'); label.classList.add('dim'); }
+    if (late && isSleep) node.classList.add('glow');
+    onTap(node, () => {
+      // 잘 자 방은 놀이 시간이 끝난 뒤에만 열림. 그 전에는 살짝 흔들리기만 함
+      if (isSleep && !late) { play(node.firstChild, 'wiggle'); sfx.tok(); return; }
+      sfx.tok();
+      go(pl.fn());
+    });
+  });
+}
+
+/* ---------- 까꿍 숲: 덤불·상자·바위 뒤에서 동물이 천천히 나옴 ---------- */
 function scenePeek(p) {
   const { W, H, U } = dims();
-  p.kinds = p.kinds || shuffle(KINDS).slice(0, 3);
+  if (!p.kinds) { const v = visit('peek'); p.kinds = pickKinds(3); p.cover = ['bush', 'box', 'rock'][v % 3]; }
   meet(p.kinds);
   const sc = div('scene meadow');
   div('sun', sc);
-  hint(['“누가 숨어 있을까?”', '“똑똑, 누구세요?”', '“우와, 친구가 나왔네!”']);
+  homeButton();
+  hint(['누가 숨어 있을까?', '똑똑, 누구세요?', josa(NAME[p.kinds[0]], '이', '가') + ' 나왔네!']);
   const n = p.kinds.length;
   const bw = Math.min(36 * U, W / n * 0.95), bh = bw * 0.66, S = bw * 0.72, by = H * 0.66;
   let out = 0;
@@ -319,11 +560,11 @@ function scenePeek(p) {
     const hole = div('hole', sc, { left: px(cx - S / 2), top: px(by - S * 1.4), width: px(S), height: px(S * 1.4) });
     const a = div('peeker', hole, { width: px(S), height: px(S) });
     a.appendChild(animal(k));
-    const bush = box(sc, cx, by, bw, bh, 'bush');
-    bush.innerHTML = BUSH;
+    const cover = box(sc, cx, by, bw, bh, 'cover');
+    cover.innerHTML = COVERS[p.cover];
     let shown = false;
     const wig = () => { play(a.firstChild, 'wiggle'); sfx.boop(); };
-    onTap(bush, () => {
+    onTap(cover, () => {
       if (shown) return wig();
       shown = true; a.classList.add('up'); sfx.peek(); out++;
       if (out === n) later(() => { sc.querySelectorAll('.peeker .face').forEach(f => play(f, 'wave')); sfx.boop(); sceneDone(); }, 2000);
@@ -332,32 +573,49 @@ function scenePeek(p) {
   });
 }
 
-/* ---------- 장면 2: 데굴데굴 구슬 ---------- */
+/* ---------- 구슬 언덕: 곧은 길과 지그재그 길이 번갈아 나옴 ---------- */
 function sceneRoll(p) {
   const { W, H, U } = dims();
-  p.kind = p.kind || KINDS[Math.floor(Math.random() * KINDS.length)];
+  if (!p.kind) { const v = visit('roll'); p.kind = pickKinds(1)[0]; p.track = v % 2; }
   meet([p.kind]);
   const sc = div('scene meadow2');
-  hint(['“구슬이 데굴데굴 굴러간다”', '“구슬이 어디로 갈까?”', '“쏙! 바구니에 들어갔다”', '“파란 구슬, 초록 구슬”']);
+  homeButton();
+  hint(['구슬이 데굴데굴 굴러간다', '구슬이 어디로 갈까?', NAME[p.kind] + '한테 구슬 주자', '파란 구슬, 초록 구슬']);
   const portrait = H > W;
-  const r = 6.5 * U, sw = 2 * U, off = r + sw / 2;  // 아이 손가락으로 누르기 쉬운 크기
-  const ledgeY = H * 0.40, groundY = H * 0.84;
-  const A = { x: W * (portrait ? 0.45 : 0.36), y: ledgeY };
-  const B = { x: W * (portrait ? 0.68 : 0.66), y: H * (portrait ? 0.66 : 0.70) };
+  const r = 6.5 * U, sw = 2 * U, off = r + sw / 2, groundY = H * 0.86;
+  const bw = 26 * U, bh = 15 * U, S = 20 * U;
+  let V, Kx, posts;
+  if (p.track === 0) {
+    V = [{ x: W * (portrait ? 0.45 : 0.36), y: H * 0.40 }, { x: W * (portrait ? 0.68 : 0.66), y: H * (portrait ? 0.66 : 0.70) }];
+    Kx = W * (portrait ? 0.83 : 0.82);
+  } else {
+    V = [{ x: W * (portrait ? 0.45 : 0.36), y: H * (portrait ? 0.30 : 0.26) },
+         { x: W * (portrait ? 0.82 : 0.72), y: H * 0.48 },
+         { x: W * (portrait ? 0.34 : 0.38), y: H * (portrait ? 0.68 : 0.72) }];
+    Kx = W * 0.17;
+  }
+  const A = V[0], ledgeY = A.y;
   const L0 = { x: Math.max(2 * U, A.x - r * 7.4), y: ledgeY };
-  const Kx = W * (portrait ? 0.83 : 0.82), bw = 26 * U, bh = 15 * U, S = 20 * U;
-
+  posts = p.track === 0 ? [L0.x + 3 * U, A.x] : [L0.x + 3 * U, V[1].x];
+  const all = [L0, ...V];
   sc.insertAdjacentHTML('beforeend', `<svg class="full" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">
-    <g stroke="#DCC6A6" stroke-width="${1.4 * U}" stroke-linecap="round">
-      <line x1="${L0.x + 3 * U}" y1="${ledgeY}" x2="${L0.x + 3 * U}" y2="${groundY}"/>
-      <line x1="${A.x}" y1="${ledgeY}" x2="${A.x}" y2="${groundY}"/></g>
-    <path d="M${L0.x} ${ledgeY} L${A.x} ${A.y} L${B.x} ${B.y}" fill="none" stroke="#CFAE84" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>
+    <g stroke="#DCC6A6" stroke-width="${1.4 * U}" stroke-linecap="round">${posts.map((x, i) =>
+      `<line x1="${x}" y1="${i === 0 ? ledgeY : (p.track === 0 ? ledgeY : V[1].y)}" x2="${x}" y2="${groundY}"/>`).join('')}</g>
+    <path d="M${all.map(v => `${v.x} ${v.y}`).join(' L')}" fill="none" stroke="#CFAE84" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>`);
   const sitter = box(sc, Kx, groundY - bh - S * 0.3, S, S, 'sitter');
   sitter.appendChild(animal(p.kind));
   const basket = box(sc, Kx, groundY - bh / 2, bw, bh, 'basket');
   basket.innerHTML = BASKET;
 
+  // 길의 각 구간마다 구슬 중심이 지나갈 선(길 위로 반지름만큼 띄움)
+  const segs = [];
+  for (let i = 0; i < all.length - 1; i++) {
+    const a = all[i], b = all[i + 1], dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy);
+    let nx = dy / len, ny = -dx / len;
+    if (ny > 0) { nx = -nx; ny = -ny; }
+    segs.push({ a: { x: a.x + nx * off, y: a.y + ny * off }, b: { x: b.x + nx * off, y: b.y + ny * off }, len, dir: Math.sign(dx) || 1 });
+  }
   const COLORS = ['#E9B8A6', '#A9C4DA', '#B8D1A6'];
   const slot = j => ({ x: A.x - r * 1.3 - j * r * 2.25, y: ledgeY - off });
   const tr = pt => `translate(${pt.x - r}px,${pt.y - r}px)`;
@@ -368,34 +626,31 @@ function sceneRoll(p) {
       + `<circle cx="14" cy="11" r="3" fill="#fff" opacity=".5"/></svg></div>`;
     return b;
   });
-  const d = { x: B.x - A.x, y: B.y - A.y }, len = Math.hypot(d.x, d.y);
-  const nrm = { x: d.y / len, y: -d.x / len };
-  const P1 = { x: A.x, y: ledgeY - off }, P2 = { x: B.x + nrm.x * off, y: B.y + nrm.y * off };
   let landed = 0, rolling = false;
 
   function roll() {
     if (rolling || !queue.length) return;
     rolling = true;
-    const b = queue.shift(), P0 = slot(0), k = landed;
+    const b = queue.shift(), k = landed;
+    // 구슬이 지날 점과 걸리는 시간을 차례로 쌓음
+    const steps = [{ pt: slot(0), t: 0, easing: 'ease-in', deg: 0 }];
+    let t = 0, deg = 0;
+    const add = (pt, ms, easing, dDeg) => { t += ms; deg += dDeg; steps.push({ pt, t, easing, deg }); };
+    add(segs[0].b, 700, 'ease-in', (segs[0].b.x - slot(0).x) / r * 57.3);
+    for (let i = 1; i < segs.length; i++) {
+      add(segs[i].a, 150, 'linear', 0);
+      add(segs[i].b, Math.max(900, segs[i].len / 0.17), 'linear', segs[i].dir * segs[i].len / r * 57.3);
+    }
+    const last = segs[segs.length - 1].b;
     const P4 = { x: Kx + (k - 1) * bw * 0.24, y: groundY - bh + r * 0.8 };  // 바구니 안쪽으로 낮춰 동물 얼굴을 가리지 않게
-    const P3 = { x: (P2.x + P4.x) / 2, y: Math.min(P2.y, P4.y) - 8 * U };
-    const T = [700, 1800, 900], tot = T[0] + T[1] + T[2];
+    add({ x: (last.x + P4.x) / 2, y: Math.min(last.y, P4.y) - 8 * U }, 450, 'ease-out', segs[segs.length - 1].dir * 40);
+    add(P4, 450, 'ease-in', segs[segs.length - 1].dir * 20);
+    const tot = t;
     b.style.transition = 'none';
-    const anim = b.animate([
-      { transform: tr(P0), offset: 0, easing: 'ease-in' },
-      { transform: tr(P1), offset: T[0] / tot, easing: 'linear' },
-      { transform: tr(P2), offset: (T[0] + T[1]) / tot, easing: 'ease-out' },
-      { transform: tr(P3), offset: (T[0] + T[1] + T[2] * 0.5) / tot, easing: 'ease-in' },
-      { transform: tr(P4), offset: 1 }
-    ], { duration: tot, fill: 'forwards' });
-    const deg = ((P1.x - P0.x) + len) / r * 180 / Math.PI;
-    b.firstChild.animate([
-      { transform: 'rotate(0deg)' },
-      { transform: `rotate(${deg}deg)`, offset: (T[0] + T[1]) / tot },
-      { transform: `rotate(${deg + 60}deg)` }
-    ], { duration: tot, fill: 'forwards' });
+    const anim = b.animate(steps.map((s, i) => ({ transform: tr(s.pt), offset: s.t / tot, easing: steps[i + 1] ? steps[i + 1].easing : 'linear' })), { duration: tot, fill: 'forwards' });
+    b.firstChild.animate(steps.map(s => ({ transform: `rotate(${s.deg}deg)`, offset: s.t / tot })), { duration: tot, fill: 'forwards' });
     anim.onfinish = () => { b.style.transform = tr(P4); anim.cancel(); };
-    sfx.roll(T[0] + T[1]);
+    sfx.roll(tot - 900);
     later(() => queue.forEach((q, j) => { q.style.transition = 'transform 1s ease'; q.style.transform = tr(slot(j)); }), 500);
     later(() => {
       sfx.drop(); landed++; rolling = false;
@@ -410,20 +665,22 @@ function sceneRoll(p) {
   onTap(sitter, () => { play(sitter.firstChild, 'wiggle'); sfx.tok(); });
 }
 
-/* ---------- 장면 3: 그림자 짝 맞추기 (틀려도 경고 없이 제자리로) ---------- */
+/* ---------- 그림자 놀이: 2쌍 → 2쌍 → 3쌍, 판마다 다른 동물. 틀려도 경고 없이 제자리로 ---------- */
+const MATCH_SETS = [2, 2, 3];
 function sceneMatch(p) {
   const { W, H, U } = dims();
-  const n = state.round === 0 ? 2 : 3;
-  p.kinds = p.kinds || shuffle(KINDS).slice(0, n);
-  if (!p.order) {
+  if (p.set === undefined) { visit('match'); p.set = 0; p.used = []; }
+  const cnt = MATCH_SETS[p.set];
+  if (!p.kinds) {
+    p.kinds = pickKinds(cnt, p.used);
     let o;
     do { o = shuffle(p.kinds.map((_, i) => i)); } while (o.every((v, i) => v === i));
     p.order = o;
   }
   meet(p.kinds);
   const sc = div('scene match');
-  hint(['“강아지 그림자는 어디 있을까?”', '“토끼는 귀가 길지?”', '“쏙! 딱 맞았다”', '“고양이 귀는 뾰족뾰족”']);
-  const cnt = p.kinds.length;
+  homeButton();
+  hint([josa(NAME[p.kinds[0]], '이', '가') + ' 어디에 쏙 들어갈까?', '쏙! 딱 맞았다', ...p.kinds.map(k => TRAIT[k])]);
   const S = Math.min(W / (cnt + 0.6) * 0.8, H * 0.22), sy = H * 0.36, ay = H * 0.74;
   const shadows = p.kinds.map((k, i) => {
     const cx = W * (i + 1) / (cnt + 1);
@@ -433,51 +690,198 @@ function sceneMatch(p) {
   });
   let matched = 0;
   p.order.forEach((idx, pos) => {
-    const k = p.kinds[idx], hx = W * (pos + 1) / (cnt + 1), hy = ay;
-    const home = `translate(${hx - S / 2}px,${hy - S / 2}px)`;
-    const a = div('drag', sc, { width: px(S), height: px(S), transform: home });
+    const k = p.kinds[idx];
+    const a = div('drag', sc, { width: px(S), height: px(S) });
     a.appendChild(animal(k));
-    let drag = null, done = false;
-    a.addEventListener('pointerdown', e => {
-      if (done || drag) return;
-      e.preventDefault();
-      try { a.setPointerCapture(e.pointerId); } catch (err) {}
-      drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, moved: false };
-      a.style.transition = 'none';
-      a.classList.add('lift');
-    });
-    a.addEventListener('pointermove', e => {
-      if (!drag || e.pointerId !== drag.id) return;
-      const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
-      if (Math.hypot(dx, dy) > 6) drag.moved = true;
-      a.style.transform = `translate(${hx - S / 2 + dx}px,${hy - S / 2 + dy}px)`;
-    });
-    const end = e => {
-      if (!drag || e.pointerId !== drag.id) return;
-      const x = hx + e.clientX - drag.sx, y = hy + e.clientY - drag.sy, moved = drag.moved;
-      drag = null;
-      a.classList.remove('lift');
+    draggable(a, W * (pos + 1) / (cnt + 1), ay, S, (x, y) => {
       const near = shadows.filter(s => !s.done && Math.hypot(s.cx - x, s.cy - y) < S * 0.6);
-      const target = near.find(s => s.k === k) || near[0];
-      if (target && target.k === k) {
-        done = true; target.done = true; matched++;
-        a.style.transition = 'transform .6s ease';
-        a.style.transform = `translate(${target.cx - S / 2}px,${target.cy - S / 2}px)`;
-        target.el.classList.add('filled');
-        sfx.snap();
-        if (matched === cnt) later(() => { sc.querySelectorAll('.drag .face').forEach(f => play(f, 'wiggle')); sfx.boop(); sceneDone(); }, 1000);
-      } else {
-        a.style.transition = 'transform .9s ease';
-        a.style.transform = home;
-        if (!moved) { play(a.firstChild, 'wiggle'); sfx.tok(); }
-      }
-    };
-    a.addEventListener('pointerup', end);
-    a.addEventListener('pointercancel', end);
+      const target = near.find(s => s.k === k);
+      if (!target) return false;
+      a.dataset.locked = '1'; target.done = true; matched++;
+      a.style.transition = 'transform .6s ease';
+      a.style.transform = `translate(${target.cx - S / 2}px,${target.cy - S / 2}px)`;
+      target.el.classList.add('filled');
+      sfx.snap();
+      if (matched === cnt) later(() => {
+        sc.querySelectorAll('.drag .face').forEach(f => play(f, 'wiggle')); sfx.boop();
+        // 다음 판은 새 동물로. 세 판을 마치면 지도로
+        if (p.set + 1 < MATCH_SETS.length) later(() => go(sceneMatch, { set: p.set + 1, used: [...p.used, ...p.kinds] }), 2200);
+        else sceneDone();
+      }, 1000);
+      return true;
+    }, () => { play(a.firstChild, 'wiggle'); sfx.tok(); });
   });
 }
 
-/* ---------- 장면 4: 잘 자 인사 ---------- */
+/* ---------- 냠냠 식당: 과일을 동물 입으로 끌어다 주면 냠냠. 정답 없음, 동물 두 마리 차례로 ---------- */
+function sceneFeed(p) {
+  const { W, H, U } = dims();
+  if (p.step === undefined) { visit('feed'); p.step = 0; }
+  if (!p.kind) { p.kind = pickKinds(1, p.prev ? [p.prev] : [])[0]; p.foods = shuffle(Object.keys(FOODS)).slice(0, 3); }
+  meet([p.kind]);
+  const sc = div('scene kitchen');
+  homeButton();
+  hint(['냠냠, 맛있다!', josa(NAME[p.kind], '아', '야') + ', ' + FOODS[p.foods[0]].name + ' 먹을래?', p.foods.map(f => FOODS[f].name).join(', ') + ' 중에 뭐 줄까?']);
+  const S = Math.min(44 * U, H * 0.36, W * 0.7), cx = W / 2, cy = H * 0.36;
+  const eater = box(sc, cx, cy, S, S, 'eater');
+  eater.appendChild(animal(p.kind));
+  const F = Math.min(17 * U, W / 4.4), fy = H * 0.8;
+  let eaten = 0;
+  const munch = () => {
+    sfx.munch();
+    for (let i = 0; i < 6; i++) later(() => { eater.firstChild.innerHTML = animalSVG(p.kind, { munch: i % 2 === 0 }); }, i * 260);
+  };
+  onTap(eater, () => { play(eater.firstChild, 'wiggle'); sfx.tok(); });
+  p.foods.forEach((f, i) => {
+    const fx = W * (i + 1) / 4;
+    box(sc, fx, fy + F * 0.32, F * 1.15, F * 0.42, 'plate');
+    const fd = div('drag', sc, { width: px(F), height: px(F) });
+    fd.innerHTML = `<div class="face">${foodSVG(f)}</div>`;
+    draggable(fd, fx, fy, F, (x, y) => {
+      if (Math.hypot(x - cx, y - (cy + S * 0.15)) > S * 0.6) return false;
+      fd.dataset.locked = '1'; eaten++;
+      fd.style.transition = 'transform .6s ease, opacity .6s ease';
+      fd.style.transform = `translate(${cx - F / 2}px,${cy + S * 0.15 - F / 2}px) scale(.25)`;
+      fd.style.opacity = '0';
+      later(munch, 450);
+      if (eaten === p.foods.length) later(() => {
+        play(eater.firstChild, 'wiggle'); sfx.boop();
+        if (p.step === 0) later(() => go(sceneFeed, { step: 1, prev: p.kind }), 1800);
+        else sceneDone();
+      }, 2400);
+      return true;
+    }, () => { play(fd.firstChild, 'nudge'); sfx.tok(); });
+  });
+}
+
+/* ---------- 보글 목욕탕: 문지르면 거품, 샤워기를 누르면 거품과 얼룩이 씻겨 나감 ---------- */
+function sceneBath(p) {
+  const { W, H, U } = dims();
+  if (!p.kind) { visit('bath'); p.kind = pickKinds(1)[0]; }
+  meet([p.kind]);
+  const sc = div('scene bathroom');
+  homeButton();
+  hint(['쓱쓱 문질러 볼까?', '거품이 보글보글', '샤워기로 쏴아, 깨끗해졌다', josa(NAME[p.kind], '이', '가') + ' 목욕하네']);
+  const portrait = H > W;
+  const S = Math.min(46 * U, W * 0.62, H * 0.4), cx = W / 2, cy = H * (portrait ? 0.46 : 0.54);
+  const pet = box(sc, cx, cy, S, S, 'pet');
+  pet.appendChild(animal(p.kind));
+  const muds = [[-0.18, -0.08], [0.2, 0.02], [-0.05, 0.2], [0.12, -0.2]].map(([dx, dy]) => {
+    const m = 7 * U;
+    return box(sc, cx + dx * S, cy + dy * S, m, m * 0.8, 'mud');
+  });
+  box(sc, cx, cy + S * 0.47, S * 1.5, S * 0.6, 'tub').innerHTML = TUB;
+  const shower = box(sc, cx + S * 0.55, cy - S * 0.9, S * 0.42, S * 0.42, 'shower');
+  shower.innerHTML = `<div class="face">${SHOWER}</div>`;
+  const rub = box(sc, cx, cy, S, S, 'rub');
+  const foams = [];
+  let last = null, washing = false;
+  const spawn = (x, y) => {
+    if (foams.length >= 24 || washing) return;
+    if (Math.hypot(x - cx, y - cy) > S * 0.42) return;
+    const f = 5 + Math.random() * 4;
+    const el = box(sc, x, y, f * U, f * U, 'foam');
+    requestAnimationFrame(() => el.classList.add('on'));
+    foams.push(el);
+    if (foams.length % 3 === 1) sfx.blub();
+    if (foams.length >= 8) shower.classList.add('ready');
+  };
+  rub.addEventListener('pointerdown', e => { e.preventDefault(); last = { x: e.clientX, y: e.clientY, id: e.pointerId }; spawn(e.clientX, e.clientY); });
+  rub.addEventListener('pointermove', e => {
+    if (!last || e.pointerId !== last.id) return;
+    if (Math.hypot(e.clientX - last.x, e.clientY - last.y) > 2.4 * U) { last.x = e.clientX; last.y = e.clientY; spawn(e.clientX, e.clientY); }
+  });
+  ['pointerup', 'pointercancel'].forEach(t => rub.addEventListener(t, () => { last = null; }));
+  onTap(shower, () => {
+    if (washing) return;
+    if (foams.length < 8) { play(shower.firstChild, 'nudge'); return; }
+    washing = true;
+    sfx.water();
+    for (let i = 0; i < 16; i++) {
+      const d = box(sc, cx + S * (0.3 + Math.random() * 0.3) - S * 0.35, cy - S * 0.75, 1.4 * U, 2.4 * U, 'drop');
+      d.animate([{ transform: 'translateY(0)', opacity: 0.9 }, { transform: `translateY(${S * 1.05}px)`, opacity: 0 }],
+        { duration: 1300, delay: i * 90, easing: 'ease-in', fill: 'both' }).onfinish = () => d.remove();
+    }
+    [...foams, ...muds].forEach((el, i) => later(() => { el.style.opacity = '0'; }, 600 + i * 60));
+    later(() => { play(pet.firstChild, 'wiggle'); sfx.boop(); sceneDone(); }, 3400);
+  });
+}
+
+/* ---------- 비눗방울: 누른 곳에 방울이 생겨 천천히 떠오르고, 누르면 톡 ---------- */
+function sceneBubbles(p) {
+  const { W, H, U } = dims();
+  if (!p.kind) { visit('bubbles'); p.kind = pickKinds(1)[0]; }
+  meet([p.kind]);
+  const sc = div('scene sky');
+  homeButton();
+  hint(['비눗방울이 둥실둥실', '톡! 터졌다', '비눗방울 잡아 볼까?', josa(NAME[p.kind], '이', '가') + ' 후 불었네']);
+  const S = Math.min(26 * U, H * 0.22), ax = W / 2, ay = H * 0.86 - S * 0.35;
+  const blower = box(sc, ax, ay, S, S, 'blower');
+  blower.appendChild(animal(p.kind));
+  let active = 0, pops = 0, finished = false;
+  const GOAL = 12;
+  function bubble(x, y) {
+    if (finished || active >= 10) return;
+    const size = (11 + Math.random() * 7) * U;
+    const b = box(sc, x, y, size, size, 'bubble');
+    const inner = div('bub', b);
+    requestAnimationFrame(() => inner.classList.add('on'));
+    active++;
+    const dist = y + size, sway = (2 + Math.random() * 3) * U * (Math.random() < 0.5 ? -1 : 1);
+    const anim = b.animate([
+      { transform: 'translate(0,0)' },
+      { transform: `translate(${sway}px,${-dist * 0.33}px)` },
+      { transform: `translate(${-sway}px,${-dist * 0.66}px)` },
+      { transform: `translate(0,${-dist}px)` }
+    ], { duration: dist / 0.055, easing: 'linear', fill: 'forwards' });
+    let gone = false;
+    const remove = () => { if (gone) return; gone = true; active--; b.remove(); };
+    anim.onfinish = remove;
+    onTap(b, () => {
+      if (inner.classList.contains('pop')) return;
+      inner.classList.add('pop'); sfx.pop(); pops++;
+      setTimeout(remove, 380);
+      if (pops === GOAL) { finished = true; later(() => { play(blower.firstChild, 'wave'); sfx.boop(); sceneDone(); }, 800); }
+    });
+  }
+  sc.addEventListener('pointerdown', e => { e.preventDefault(); if (e.target === sc) bubble(e.clientX, e.clientY); });
+  onTap(blower, () => {
+    play(blower.firstChild, 'wiggle');
+    [-1, 0, 1].forEach((d, i) => later(() => bubble(ax + d * S * 0.5, ay - S * 0.6 - i * 2 * U), i * 250));
+  });
+}
+
+/* ---------- 불 켜기 집: 창문을 누르면 불이 켜지고 동물 친구가 나타남 ---------- */
+function sceneHouse(p) {
+  const { W, H, U } = dims();
+  if (!p.kinds) { visit('house'); p.kinds = pickKinds(4); }
+  meet(p.kinds);
+  const sc = div('scene evening');
+  homeButton();
+  hint(['창문에 누가 있을까?', '불을 켜 볼까? 반짝', josa(NAME[p.kinds[0]], '이', '가') + ' 창문에 있네']);
+  const portrait = H > W;
+  const hw = Math.min(W * 0.84, H * 0.62), hb = hw * 0.78, cx = W / 2, cy = H * (portrait ? 0.58 : 0.62);
+  const top = cy - hb / 2;
+  box(sc, cx, top - hw * 0.21 + 1, hw * 1.12, hw * 0.42, 'roof').innerHTML = ROOF;
+  box(sc, cx, cy, hw, hb, 'wall');
+  box(sc, cx, top + hb * 0.85, hw * 0.16, hb * 0.3, 'door');
+  const ws = hw * 0.26;
+  let lit = 0;
+  [[-0.25, 0.28], [0.25, 0.28], [-0.25, 0.62], [0.25, 0.62]].forEach(([dx, dy], i) => {
+    const w = box(sc, cx + dx * hw, top + dy * hb, ws, ws, 'win');
+    div('glow', w);
+    const a = div('wa', w, { width: px(ws * 0.8), height: px(ws * 0.8), left: px(ws * 0.1) });
+    a.appendChild(animal(p.kinds[i]));
+    let on = false;
+    onTap(w, () => {
+      if (on) { play(a.firstChild, 'wiggle'); sfx.boop(); return; }
+      on = true; w.classList.add('on'); sfx.light(); lit++;
+      if (lit === 4) later(() => { sc.querySelectorAll('.wa .face').forEach(f => play(f, 'wave')); sfx.boop(); sceneDone(); }, 2000);
+    });
+  });
+}
+
+/* ---------- 잘 자 방 ---------- */
 function beds(sc, kinds, coveredAll) {
   const { W, H, U } = dims();
   const n = kinds.length;
@@ -491,16 +895,17 @@ function beds(sc, kinds, coveredAll) {
     return { k, bed, head, blanket };
   });
 }
+// 오늘 가장 최근에 만난 동물 3마리
 function sleepKinds() {
-  const kinds = state.met.slice(0, 3);
-  shuffle(KINDS).forEach(k => { if (kinds.length < 3 && !kinds.includes(k)) kinds.push(k); });
+  const kinds = state.met.slice(-3);
+  pickKinds(3, kinds).forEach(k => { if (kinds.length < 3) kinds.push(k); });
   return kinds;
 }
 function sceneSleep(p) {
   p.kinds = p.kinds || sleepKinds();
   const sc = div('scene dusk');
   div('moon', sc);
-  hint(['“이제 친구들이 코 잘 시간이야”', '“이불 덮어 줄까?”', '“잘 자, 또 만나”']);
+  hint(['이제 친구들이 코 잘 시간이야', '이불 덮어 줄까?', '잘 자, 또 만나']);
   let covered = 0;
   beds(sc, p.kinds, false).forEach(({ k, bed, head, blanket }) => {
     let done = false;
@@ -550,7 +955,7 @@ function syncPanel() {
 }
 function openPanel() {
   syncPanel();
-  $('#pSleep').disabled = !(state.cur && PLAY.includes(state.cur.fn));
+  $('#pSleep').disabled = !state.cur || [sceneStart, sceneSleep, sceneRest].includes(state.cur.fn);
   panel.classList.remove('hidden');
 }
 function closePanel() { panel.classList.add('hidden'); }
@@ -580,8 +985,9 @@ addEventListener('resize', () => {
 });
 
 /* ---------- 시작 ---------- */
-// 확인용: ?demo=peek|roll|match|sleep|rest 로 장면을 바로 열 수 있음
-const DEMO = { peek: scenePeek, roll: sceneRoll, match: sceneMatch, sleep: sceneSleep, rest: sceneRest };
+// 확인용: ?demo=map|peek|roll|match|feed|bath|bubbles|house|sleep|rest 로 장면을 바로 열 수 있음
+const DEMO = { map: sceneMap, peek: scenePeek, roll: sceneRoll, match: sceneMatch, feed: sceneFeed, bath: sceneBath,
+  bubbles: sceneBubbles, house: sceneHouse, sleep: sceneSleep, rest: sceneRest };
 const demo = new URLSearchParams(location.search).get('demo');
 if (demo && DEMO[demo]) { state.start = Date.now(); go(DEMO[demo], null, { fade: false }); }
 else go(isRestDay() ? sceneRest : sceneStart, null, { fade: false });
