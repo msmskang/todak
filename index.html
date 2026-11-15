@@ -36,6 +36,18 @@
   .evening { background:linear-gradient(#E3DCEB, #EDE6E2); }
   .dusk    { background:linear-gradient(#E8E1EC, #D9D3E3); }
   .rest    { background:linear-gradient(#DED8E5, #D0CADB); }
+  /* 달님 안녕: 아주 어둡지 않은 보랏빛 밤하늘 */
+  .moonsky { background:linear-gradient(#6F7494, #A9A7BF); }
+  .bigmoon, .moonHalo { transition:transform 1.6s cubic-bezier(.4,.1,.3,1); }
+  .moonHalo { border-radius:50%; background:radial-gradient(rgba(248,236,190,.55) 0 45%, rgba(248,236,190,0) 70%); opacity:.7; transition:transform 1.6s cubic-bezier(.4,.1,.3,1), opacity 1.5s ease; }
+  .moonHalo.on { opacity:1; }
+  .bigmoon .m-open { opacity:0; transition:opacity 1.2s ease; }
+  .bigmoon .m-closed { opacity:1; transition:opacity 1.2s ease; }
+  .bigmoon.awake .m-open { opacity:1; }
+  .bigmoon.awake .m-closed { opacity:0; }
+  .cloudman { transition:transform 3s ease-in-out; z-index:3; }
+  .roofCat { z-index:2; }
+  .moonsky svg.full { pointer-events:none; }
   .sun  { position:absolute; left:9%; top:9%; width:14vmin; height:14vmin; border-radius:50%; background:#F6E4BC; opacity:.8; }
   .moon { position:absolute; right:11%; top:11%; width:11vmin; height:11vmin; border-radius:50%; background:#F4ECD6;
           box-shadow:0 0 0 2vmin rgba(244,236,214,.35); }
@@ -56,6 +68,28 @@
   .face.nudge  { animation:nudge .8s ease-in-out 1; }
   @keyframes wiggle { 0%,100% { transform:rotate(0); } 25% { transform:rotate(-7deg); } 75% { transform:rotate(7deg); } }
   @keyframes nudge  { 0%,100% { transform:translateX(0); } 50% { transform:translateX(7%); } }
+
+  /* 얼굴 속 움직임: 눈 깜빡임, 먹을 때 입·볼·눈·얼굴이 함께 움직임 */
+  .face .eyes, .face .blink, .face .mouth, .face .cheek { transform-box:fill-box; transform-origin:50% 50%; }
+  .face .blink { animation:blink 6s ease-in-out infinite; }
+  @keyframes blink { 0%,93%,100% { transform:scaleY(1); } 96% { transform:scaleY(.12); } }
+  .face .mouth { opacity:0; transform-origin:50% 0%; transform:scale(.6,.1); }
+  .face.chew .mouth { animation:mouthChew 1.8s ease-in-out 1; }
+  .face.chew .cheek { animation:cheekPuff 1.8s ease-in-out 1; }
+  .face.chew .eyes  { animation:eyeSmile 1.8s ease-in-out 1; }
+  .face.chew svg    { transform-origin:50% 100%; animation:faceSquash 1.8s ease-in-out 1; }
+  @keyframes mouthChew {
+    0%       { opacity:0; transform:scale(.6,.1); }
+    8%       { opacity:1; transform:scale(.7,.15); }
+    22%,50%,78% { opacity:1; transform:scale(1,1); }
+    36%,64%  { opacity:1; transform:scale(.75,.18); }
+    92%      { opacity:1; transform:scale(.7,.15); }
+    100%     { opacity:0; transform:scale(.6,.1); }
+  }
+  @keyframes cheekPuff  { 0%,22%,50%,78%,100% { transform:scale(1); } 36%,64%,92% { transform:scale(1.25); } }
+  @keyframes eyeSmile   { 0%,100% { transform:scaleY(1); } 15%,85% { transform:scaleY(.7); } }
+  @keyframes faceSquash { 0%,22%,50%,78%,100% { transform:scale(1,1); } 36%,64%,92% { transform:scale(1.025,.975); } }
+  @media (prefers-reduced-motion: reduce) { .face .blink { animation:none; } }
 
   /* 지도 */
   .node { border-radius:50%; background:#FFFDF8; box-shadow:0 0 0 .9vmin #E6D8C2; transition:opacity 1s ease, box-shadow 1s ease; }
@@ -91,6 +125,8 @@
   .mat { border-radius:50%; z-index:2; box-shadow:0 0 0 .6vmin #E8D2C6;
          background:repeating-conic-gradient(#F1DCD2 0 25%, #FBF4EE 0 50%) 0 0 / 5vmin 5vmin; }
   .onMat { z-index:3; }
+  .table { z-index:2; border-radius:3vmin; background:#EBD3AE; box-shadow:0 1.8vmin 0 #D5B48A, inset 0 0 0 .6vmin #E0C49B; }
+  .tableLeg { z-index:1; border-radius:1vmin; background:#C9A57C; }
 
   /* 구슬 */
   .ball { position:absolute; left:0; top:0; z-index:2; }
@@ -283,7 +319,7 @@ const sfx = {
   roll(ms) { for (let i = 0; i < ms / 240; i++) tone(170 + Math.random() * 30, 0.05, { type: 'triangle', gain: 0.045, delay: i * 0.24 }); },
   drop() { tone(300, 0.15, { type: 'triangle', gain: 0.14 }); tone(240, 0.18, { type: 'triangle', gain: 0.1, delay: 0.15 }); },
   snap() { tone(440, 0.25, { gain: 0.09 }); tone(660, 0.35, { gain: 0.06, delay: 0.12 }); },
-  munch() { for (let i = 0; i < 4; i++) tone(210, 0.08, { type: 'triangle', gain: 0.08, delay: i * 0.26 }); },
+  munch() { [0.65, 1.15, 1.65].forEach(d => tone(210, 0.08, { type: 'triangle', gain: 0.08, delay: d })); },  // 입을 다무는 순간에 맞춤
   step(ms) { for (let i = 0; i < ms / 320; i++) tone(230, 0.07, { type: 'triangle', gain: 0.04, delay: i * 0.32 }); },
   pop()  { tone(760, 0.12, { glide: 520, gain: 0.07 }); },
   blub() { tone(260, 0.16, { glide: 380, gain: 0.06 }); },
@@ -293,9 +329,9 @@ const sfx = {
 };
 ['pointerdown', 'touchend', 'click'].forEach(t => document.addEventListener(t, audioInit, { passive: true }));
 
-/* ---------- 그림: 동물 얼굴 9종. shadow는 그림자, sleep은 눈 감은 얼굴, munch는 입 벌린 얼굴 ---------- */
+/* ---------- 그림: 동물 얼굴. shadow는 그림자, sleep은 눈 감은 얼굴. 먹는 입은 chew()가 CSS로 움직임 ---------- */
 const SH = '#D5CABE', EYE = '#5B4B40';
-function animalSVG(kind, { shadow = false, sleep = false, munch = false } = {}) {
+function animalSVG(kind, { shadow = false, sleep = false } = {}) {
   const c = v => shadow ? SH : v;
   let s = '';
   if (kind === 'dog') {
@@ -376,12 +412,22 @@ function animalSVG(kind, { shadow = false, sleep = false, munch = false } = {}) 
     const ey = { dog: 51, cat: 53, rabbit: 58, duck: 49, bear: 52, pig: 51, elephant: 47, lion: 52, sheep: 58, mouse: 56, horse: 44, frog: 35 }[kind];
     const cx = { sheep: 37, elephant: 33, lion: 34, horse: 34, frog: 27 }[kind] || 31;
     const cy = { frog: 66 }[kind] || ey + 11;
-    s += `<circle cx="${cx}" cy="${cy}" r="5" fill="#F0B4A4" opacity=".4"/><circle cx="${100 - cx}" cy="${cy}" r="5" fill="#F0B4A4" opacity=".4"/>`;
-    s += sleep
-      ? `<path d="M35 ${ey} q4 3.5 8 0 M57 ${ey} q4 3.5 8 0" stroke="${EYE}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
-      : `<circle cx="39" cy="${ey}" r="3.6" fill="${EYE}"/><circle cx="61" cy="${ey}" r="3.6" fill="${EYE}"/>`
-        + `<circle cx="40.2" cy="${ey - 1.2}" r="1.1" fill="#fff"/><circle cx="62.2" cy="${ey - 1.2}" r="1.1" fill="#fff"/>`;
-    if (munch) s += `<ellipse cx="50" cy="${{ horse: 82, frog: 72 }[kind] || ey + 20}" rx="6" ry="5" fill="#8C5E52"/>`;
+    s += `<circle class="cheek" cx="${cx}" cy="${cy}" r="5" fill="#F0B4A4" opacity=".4"/><circle class="cheek" cx="${100 - cx}" cy="${cy}" r="5" fill="#F0B4A4" opacity=".4"/>`;
+    if (sleep) {
+      s += `<path d="M35 ${ey} q4 3.5 8 0 M57 ${ey} q4 3.5 8 0" stroke="${EYE}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+    } else {
+      // 눈: 바깥 묶음은 먹을 때 살짝 웃는 눈, 안쪽 묶음은 가끔 눈 깜빡임. 동물마다 깜빡이는 때가 다름
+      const blink = `animation-duration:${(5 + Math.random() * 3).toFixed(1)}s;animation-delay:-${(Math.random() * 8).toFixed(1)}s`;
+      s += `<g class="eyes"><g class="blink" style="${blink}">`
+         + `<circle cx="39" cy="${ey}" r="3.6" fill="${EYE}"/><circle cx="61" cy="${ey}" r="3.6" fill="${EYE}"/>`
+         + `<circle cx="40.2" cy="${ey - 1.2}" r="1.1" fill="#fff"/><circle cx="62.2" cy="${ey - 1.2}" r="1.1" fill="#fff"/></g></g>`;
+      // 입: 평소에는 보이지 않고, 먹을 때(.chew)만 천천히 벌어졌다 다물어짐
+      // 코·주둥이와 겹치지 않는 자리. 코끼리는 코 오른쪽 아래
+      const my = { horse: 80, frog: 70, dog: 71, bear: 71, pig: 78, elephant: 67 }[kind] || ey + 18;
+      const mx = { elephant: 63 }[kind] || 50;
+      s += `<g class="mouth"><ellipse cx="${mx}" cy="${my + 3}" rx="6.5" ry="5.5" fill="#8C5E52"/>`
+         + `<ellipse cx="${mx}" cy="${my + 6}" rx="3.8" ry="2.2" fill="#E3A79C"/></g>`;
+    }
   }
   return `<svg viewBox="0 0 100 100" aria-hidden="true">${s}</svg>`;
 }
@@ -410,7 +456,7 @@ const roofSVG = ([a, b]) => `<svg viewBox="0 0 120 46" aria-hidden="true"><path 
 const NUT = `<path d="M30 9 C36 14 50 24 50 38 C50 50 40 54 30 54 C20 54 10 50 10 38 C10 24 24 14 30 9 Z" fill="#B07F5E"/><path d="M11 42 C16 50 44 50 49 42 C49 50 40 54 30 54 C20 54 11 50 11 42 Z" fill="#DDC19B"/><path d="M30 9 L30 4" stroke="#9C7255" stroke-width="3" stroke-linecap="round"/><ellipse cx="22" cy="28" rx="4" ry="8" transform="rotate(20 22 28)" fill="#fff" opacity=".25"/>`;
 const BONE = `<g transform="rotate(-20 30 29)"><g fill="#F6EEE2" stroke="#DCCDB8" stroke-width="1.5"><circle cx="13" cy="22" r="7"/><circle cx="13" cy="36" r="7"/><circle cx="47" cy="22" r="7"/><circle cx="47" cy="36" r="7"/></g><rect x="12" y="23" width="36" height="12" fill="#F6EEE2"/><path d="M17 23 H43 M17 35 H43" stroke="#DCCDB8" stroke-width="1.5"/></g>`;
 const itemSVG = k => `<svg viewBox="0 0 60 60" aria-hidden="true">${k === 'nut' ? NUT : k === 'bone' ? BONE : FOODS[k].svg}</svg>`;
-const snackName = k => k === 'bone' ? '뼈다귀' : FOODS[k].name;
+const snackName = k => k === 'bone' ? '뼈다귀' : k === 'nut' ? '밤' : FOODS[k].name;
 const TREE = `<svg viewBox="0 0 200 150" aria-hidden="true"><path d="M88 150 L92 92 L108 92 L112 150 Z" fill="#C9A27F"/><path d="M100 104 L76 84 M100 112 L126 88" stroke="#C9A27F" stroke-width="7" stroke-linecap="round"/><g fill="#B6CA9F"><circle cx="50" cy="66" r="34"/><circle cx="84" cy="40" r="38"/><circle cx="126" cy="40" r="36"/><circle cx="156" cy="68" r="32"/><circle cx="104" cy="74" r="34"/><circle cx="66" cy="84" r="22"/><circle cx="140" cy="88" r="22"/></g><g fill="#A7BD8F"><circle cx="70" cy="56" r="6"/><circle cx="130" cy="60" r="5"/><circle cx="104" cy="34" r="5"/></g><g fill="#D7C08E"><circle cx="60" cy="40" r="5"/><circle cx="116" cy="52" r="5"/><circle cx="150" cy="74" r="5"/><circle cx="88" cy="72" r="5"/></g></svg>`;
 const ICON = {
   peek: `<ellipse cx="25" cy="18" rx="4" ry="10" fill="#EDE3D8"/><ellipse cx="35" cy="18" rx="4" ry="10" fill="#EDE3D8"/><g fill="#B6CA9F"><circle cx="18" cy="40" r="12"/><circle cx="30" cy="33" r="15"/><circle cx="43" cy="40" r="12"/><rect x="7" y="40" width="46" height="14" rx="7"/></g>`,
@@ -421,6 +467,7 @@ const ICON = {
   bath: `<g fill="#fff" stroke="#DCE3EA" stroke-width="1.5"><circle cx="20" cy="27" r="6"/><circle cx="30" cy="22" r="8"/><circle cx="41" cy="27" r="6"/></g><path d="M6 30 H54 Q54 48 40 50 H20 Q6 48 6 30 Z" fill="#fff" stroke="#D3DAE0" stroke-width="2"/>`,
   bubbles: `<g fill="rgba(214,226,240,.5)" stroke="#A9BED6" stroke-width="1.6"><circle cx="22" cy="36" r="12"/><circle cx="40" cy="22" r="9"/><circle cx="42" cy="44" r="6"/></g><circle cx="18" cy="31" r="2.5" fill="#fff"/>`,
   house: `<path d="M10 28 L30 10 L50 28 Z" fill="#D9AC9C"/><rect x="14" y="27" width="32" height="24" rx="2" fill="#EFE3D1"/><rect x="18" y="31" width="10" height="9" rx="1.5" fill="#F5DE9E"/><rect x="32" y="31" width="10" height="9" rx="1.5" fill="#A9B1C5"/><rect x="26" y="42" width="8" height="9" fill="#C9A27F"/>`,
+  moon: `<circle cx="30" cy="27" r="15" fill="#F5E6AE" stroke="#EBD48E" stroke-width="1.5"/><circle cx="25" cy="26" r="1.8" fill="#5B4B40"/><circle cx="35" cy="26" r="1.8" fill="#5B4B40"/><path d="M27 32 q3 2.5 6 0" stroke="#C9926F" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M4 54 L30 36 L56 54 Z" fill="#AFBCD0"/>`,
   sleep: `<path d="M40 7 A12 12 0 1 0 53 21 A9 9 0 1 1 40 7 Z" fill="#EBD69A"/><rect x="8" y="33" width="44" height="14" rx="4" fill="#B8C9DD"/><ellipse cx="17" cy="32" rx="8" ry="5" fill="#FBF8F3" stroke="#E3D8C8"/><rect x="7" y="45" width="4" height="8" rx="1" fill="#D9BF9C"/><rect x="49" y="45" width="4" height="8" rx="1" fill="#D9BF9C"/>`
 };
 const HOME_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 L12 4 L20 11 M6.5 9.5 V19 H17.5 V9.5" fill="none" stroke="#A08E7C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -446,7 +493,9 @@ function box(parent, cx, cy, w, h, cls) {
 function animal(kind, opts) { const f = document.createElement('div'); f.className = 'face'; f.innerHTML = animalSVG(kind, opts); return f; }
 function play(el, cls) {
   el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
-  el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
+  // 입·볼 같은 안쪽 그림의 움직임이 끝난 신호는 무시하고, 이 요소 자신의 움직임이 끝날 때만 지움
+  const end = e => { if (e.target !== el) return; el.classList.remove(cls); el.removeEventListener('animationend', end); };
+  el.addEventListener('animationend', end);
 }
 function onTap(el, fn) { el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); fn(e); }); }
 // 받침 있는 말 뒤에는 a, 없는 말 뒤에는 b ("곰이", "강아지가")
@@ -465,10 +514,14 @@ function stageDots(n, cur) {
   const d = div('dots');
   for (let i = 0; i < n; i++) div(i <= cur ? 'on' : '', d);
 }
-// 입을 벌렸다 다물었다 하며 먹는 모습
-function chew(holder, kind) {
+// 먹는 모습: 그림은 그대로 두고 입·볼·눈·얼굴이 1.8초 동안 부드럽게 세 번 오물오물함
+const CHEW_MS = 1800;
+function chew(holder) {
+  const f = holder.firstChild;
   sfx.munch();
-  for (let i = 0; i < 6; i++) later(() => { holder.firstChild.innerHTML = animalSVG(kind, { munch: i % 2 === 0 }); }, i * 260);
+  f.classList.remove('chew'); void f.offsetWidth; f.classList.add('chew');
+  clearTimeout(f._chewT);
+  f._chewT = later(() => f.classList.remove('chew'), CHEW_MS + 50);
 }
 // 물건을 from에서 to로 살짝 포물선을 그리며 옮김. 다 옮긴 뒤 지우는 일은 부른 쪽에서 함
 function toss(parent, svg, size, from, to, ms, endScale = 1) {
@@ -573,17 +626,19 @@ const PLACES = [
   { id: 'bath', name: '보글 목욕탕', fn: () => sceneBath },
   { id: 'bubbles', name: '비눗방울', fn: () => sceneBubbles },
   { id: 'house', name: '불 켜기 집', fn: () => sceneHouse },
+  { id: 'moon', name: '달님 안녕', fn: () => sceneMoon },
   { id: 'sleep', name: '잘 자 방', fn: () => sceneSleep }
 ];
 function mapPoints(W, H) {
   const pts = [];
   if (H > W) {
-    // 세로 화면: 3칸씩 3줄, 지그재그
-    [0.24, 0.5, 0.76].forEach((y, r) => (r % 2 ? [0.8, 0.5, 0.2] : [0.2, 0.5, 0.8]).forEach(x => pts.push({ x: x * W, y: y * H })));
+    // 세로 화면: 3칸·2칸·3칸·2칸, 지그재그
+    [[0.2, 0.5, 0.8], [0.7, 0.3], [0.2, 0.5, 0.8], [0.7, 0.3]].forEach((row, r) =>
+      row.forEach(x => pts.push({ x: x * W, y: [0.2, 0.4, 0.6, 0.8][r] * H })));
   } else {
-    // 가로 화면: 위 5칸, 아래 4칸
+    // 가로 화면: 위 5칸, 아래 5칸
     [0.1, 0.3, 0.5, 0.7, 0.9].forEach(x => pts.push({ x: x * W, y: 0.33 * H }));
-    [0.8, 0.6, 0.4, 0.2].forEach(x => pts.push({ x: x * W, y: 0.72 * H }));
+    [0.9, 0.7, 0.5, 0.3, 0.1].forEach(x => pts.push({ x: x * W, y: 0.72 * H }));
   }
   return pts;
 }
@@ -1018,37 +1073,69 @@ function nutTake(sc, p) {
   later(next, 900);
 }
 
-// 4막: 돗자리에 다 같이 둘러앉아 냠냠. 처음엔 다 같이 먹고, 그 뒤엔 누른 친구가 먹음
+// 4막: 테이블에 다 같이 둘러앉아 나눠 먹기. 생쥐의 밤과 친구들의 간식이 테이블에 놓이고,
+// 아이가 음식을 친구 입으로 끌어다 주면 냠냠. 누가 무엇을 먹어도 됨(정답 없음). 음식을 누르기만 하면 덜 먹은 친구에게 감
 function nutFeast(sc, p) {
   const { W, H, U } = dims();
-  hint(['다 같이 냠냠', '나눠 먹으니까 더 맛있다', '생쥐야, 고마워']);
+  const h = hint(['생쥐는 밤을, 친구들은 간식을 가져왔어요', '누구한테 먼저 줄까?', '다 같이 나눠 먹자']);
   const kinds = ['dog', 'horse', 'mouse', 'pig', 'frog'];
-  const mw = Math.min(W * 0.86, H), mh = mw * 0.4, mx = W / 2, my = H * 0.66;
-  box(sc, mx, my, mw, mh, 'mat');
-  const foods = ['nut', 'bone', 'nut', 'carrot', 'nut', 'apple', 'nut', 'strawberry'], fs = mw * 0.11;
-  foods.forEach((f, i) => {
-    const a = i / foods.length * Math.PI * 2;
-    box(sc, mx + Math.cos(a) * mw * 0.27, my + Math.sin(a) * mh * 0.24, fs, fs, 'onMat').innerHTML = itemSVG(f);
-  });
-  const A = Math.min(W / 5, mw / 4.2, H * 0.2, 26 * U);
-  // 돗자리 뒤쪽 가장자리를 따라 앉고, 턱만 살짝 돗자리에 가려짐
+  const tw = Math.min(W * 0.92, H * 0.95), th = tw * 0.38, tx = W / 2, ty = H * 0.66, tTop = ty - th / 2;
+  const A = Math.min(W / 5.3, tw / 5, H * 0.2, 26 * U);
+  // 친구들은 테이블 뒤에 앉고, 입이 테이블 위로 보이게 함
   const eaters = kinds.map((k, i) => {
-    const dx = (i - 2) * mw * 0.2, edge = my - mh / 2 * Math.sqrt(1 - (dx / (mw / 2)) ** 2);
-    const e = box(sc, mx + dx, edge - A * 0.26, A, A, 'sitter');
+    const x = tx + (i - 2) * tw * 0.2, y = tTop - A * 0.36;
+    const e = box(sc, x, y, A, A, 'sitter');
     e.appendChild(animal(k));
-    return e;
+    return { k, e, x, y: y + A * 0.22, ate: 0 };
   });
-  later(() => eaters.forEach((e, i) => later(() => chew(e, kinds[i]), i * 300)), 1200);
-  const tapped = new Set();
-  let over = false;
-  eaters.forEach((e, i) => onTap(e, () => {
-    if (over) { play(e.firstChild, 'wiggle'); sfx.tok(); return; }
-    chew(e, kinds[i]); tapped.add(i);
-    if (tapped.size === kinds.length) {
+  // 테이블: 상판, 앞면, 다리
+  [-0.36, 0.36].forEach(d => box(sc, tx + d * tw, ty + th * 0.62, tw * 0.05, th * 0.7, 'tableLeg'));
+  box(sc, tx, ty, tw, th, 'table');
+  const say = t => { h.lastChild.textContent = `“${t}”`; };
+  const foods = ['nut', 'bone', 'nut', 'carrot', 'apple', 'nut', 'strawberry', 'nut'];
+  const F = Math.min(tw * 0.15, th * 0.38);
+  let left = foods.length, over = false;
+  function feed(fd, f, who) {
+    fd.dataset.locked = '1';
+    fd.style.transition = 'transform .7s ease, opacity .7s ease';
+    fd.style.transform = `translate(${who.x - F / 2}px,${who.y - F / 2}px) scale(.25)`;
+    fd.style.opacity = '0';
+    sfx.snap();
+    later(() => { chew(who.e); fd.remove(); }, 500);
+    who.ate++; left--;
+    say(rand([josa(NAME[who.k], '이', '가') + ' ' + josa(snackName(f), '을', '를') + ' 냠냠', '냠냠, 맛있다!',
+      (who.k === 'mouse' ? '생쥐도 같이 먹어요' : NAME[who.k] + '도 맛있대')]));
+    if (left === 0) {
       over = true;
-      later(() => { eaters.forEach(x => play(x.firstChild, 'wave')); sfx.boop(); nutNext(p); }, 2000);
+      later(() => {
+        eaters.forEach((x, i) => later(() => play(x.e.firstChild, 'wave'), i * 200)); sfx.boop();
+        say(rand(['다 같이 나눠 먹으니까 더 맛있다', '생쥐야, 고마워! 친구들아, 고마워!']));
+        nutNext(p);
+      }, 2400);
     }
+  }
+  foods.forEach((f, i) => {
+    const col = i % 4, row = Math.floor(i / 4);
+    const fx = tx + (col - 1.5) * tw * 0.2 + (row ? tw * 0.05 : -tw * 0.05), fy = tTop + th * (row ? 0.7 : 0.33);
+    const fd = div('drag', sc, { width: px(F), height: px(F), zIndex: 3 });
+    fd.innerHTML = `<div class="face">${itemSVG(f)}</div>`;
+    draggable(fd, fx, fy, F, (x, y) => {
+      // 놓은 자리에서 가장 가까운 친구의 입
+      const who = eaters.reduce((m, q) => Math.hypot(x - q.x, y - q.y) < Math.hypot(x - m.x, y - m.y) ? q : m);
+      if (Math.hypot(x - who.x, y - who.y) > A * 0.75) return false;
+      feed(fd, f, who); return true;
+    }, () => {
+      // 누르기만 하면 가장 덜 먹은 친구 중 가까운 친구에게 감
+      const min = Math.min(...eaters.map(q => q.ate));
+      const who = eaters.filter(q => q.ate === min).reduce((m, q) => Math.abs(q.x - fx) < Math.abs(m.x - fx) ? q : m);
+      feed(fd, f, who);
+    });
+  });
+  eaters.forEach(q => onTap(q.e, () => {
+    play(q.e.firstChild, 'wiggle'); sfx.tok();
+    if (!over) say(q.k === 'mouse' ? '생쥐도 먹고 싶대' : NAME[q.k] + '도 먹고 싶대');
   }));
+  later(() => eaters.forEach((q, i) => later(() => play(q.e.firstChild, 'wiggle'), i * 250)), 900);
 }
 
 /* ---------- 보글 목욕탕: 문지르면 거품, 샤워기를 누르면 거품과 얼룩이 씻겨 나감 ---------- */
@@ -1184,6 +1271,139 @@ function sceneHouse(p) {
         nextStage(sceneHouse, p, { prev: p.kinds });
       }, 2000);
     });
+  });
+}
+
+/* ---------- 달님 안녕: 좋아하는 그림책의 흐름. 아이가 눌러야만 이야기가 넘어감
+   1) 지붕 위가 환해짐 → 톡톡 누르면 달님이 천천히 올라옴(3번)
+   2) 달님이 눈을 뜨면 구름 아저씨가 오른쪽에서 빼꼼 → 누르면 달님을 천천히 가림
+   3) 구름 아저씨를 누르면 비켜 줌 → 달님 안녕. 지붕 위 고양이 두 마리가 함께 봄. 3판, 판마다 지붕 색이 바뀜 ---------- */
+const MOON_STAGES = 3;
+function moonSVG() {
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">`
+    + `<circle cx="50" cy="50" r="46" fill="#F5E6AE"/><circle cx="50" cy="50" r="46" fill="none" stroke="#EBD48E" stroke-width="2"/>`
+    + `<circle cx="26" cy="62" r="8" fill="#F0B49A" opacity=".45"/><circle cx="74" cy="62" r="8" fill="#F0B49A" opacity=".45"/>`
+    + `<g class="m-closed"><path d="M30 50 q6 5 12 0 M58 50 q6 5 12 0" stroke="${EYE}" stroke-width="2.6" fill="none" stroke-linecap="round"/></g>`
+    + `<g class="m-open"><g class="eyes"><g class="blink" style="animation-duration:6.5s">`
+    + `<circle cx="36" cy="49" r="4.2" fill="${EYE}"/><circle cx="64" cy="49" r="4.2" fill="${EYE}"/>`
+    + `<circle cx="37.4" cy="47.6" r="1.3" fill="#fff"/><circle cx="65.4" cy="47.6" r="1.3" fill="#fff"/></g></g></g>`
+    + `<path d="M43 66 q7 6 14 0" stroke="#C9926F" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>`;
+}
+const CLOUD_SVG = `<svg viewBox="0 0 160 100" aria-hidden="true"><g fill="#F6F4F7" stroke="#DCD6E2" stroke-width="2">`
+  + `<circle cx="40" cy="58" r="26"/><circle cx="74" cy="40" r="32"/><circle cx="112" cy="50" r="28"/><circle cx="132" cy="68" r="20"/>`
+  + `<rect x="18" y="56" width="128" height="34" rx="17"/></g>`
+  + `<rect x="20" y="58" width="124" height="30" rx="15" fill="#F6F4F7"/>`
+  + `<circle cx="66" cy="58" r="3.4" fill="#6E6470"/><circle cx="96" cy="58" r="3.4" fill="#6E6470"/>`
+  + `<circle cx="56" cy="70" r="6" fill="#F0B4A4" opacity=".4"/><circle cx="106" cy="70" r="6" fill="#F0B4A4" opacity=".4"/>`
+  + `<path d="M81 68 q-6 6 -13 2 M81 68 q6 6 13 2" stroke="#A89BA6" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+function sceneMoon(p) {
+  const { W, H, U } = dims();
+  if (p.stage === undefined) { visit('moon'); p.stage = 0; }
+  meet(['cat']);
+  const sc = div('scene moonsky');
+  homeButton();
+  stageDots(MOON_STAGES, p.stage);
+  const h = hint(['깜깜한 밤이 되었어요', '어? 지붕 위가 환해졌네']);
+  h.style.color = '#F1ECF3';
+  const say = t => { h.lastChild.textContent = `“${t}”`; };
+
+  // 별: 움직이지 않는 작은 점
+  let stars = '';
+  for (let i = 0; i < 14; i++) stars += `<circle cx="${(Math.random() * W).toFixed(0)}" cy="${(Math.random() * H * 0.5).toFixed(0)}" r="${(1 + Math.random() * 1.4).toFixed(1)}" fill="#FBF6EE" opacity=".55"/>`;
+  sc.insertAdjacentHTML('beforeend', `<svg class="full" width="${W}" height="${H}" aria-hidden="true">${stars}</svg>`);
+
+  // 지붕과 벽의 자리
+  const portrait = H > W;
+  const RW = Math.min(W * 1.1, H * 1.2), RH = RW * 0.32;
+  const roofBase = H * 0.86, roofTop = roofBase - RH, cxs = W / 2;
+  const M = portrait ? Math.min(W * 0.52, H * 0.3) : H * 0.26;
+  const moonUp = roofTop - M * 0.8, moonDown = roofTop + M * 0.55;
+
+  // 하늘 층: 지붕 윗부분만 보이게 잘라서, 달님이 지붕 뒤에서 올라오는 것처럼 보이게 함
+  const slopeY = x => roofTop + Math.min(1, Math.abs(x - cxs) / (RW / 2)) * RH;
+  const skyLayer = div('full', sc, { width: px(W), height: px(H),
+    clipPath: `polygon(0 0, ${W}px 0, ${W}px ${slopeY(W)}px, ${cxs}px ${roofTop}px, 0 ${slopeY(0)}px)` });
+  const halo = box(skyLayer, cxs, moonDown, M * 1.7, M * 1.7, 'moonHalo');
+  const moon = box(skyLayer, cxs, moonDown, M, M, 'bigmoon');
+  const face = div('face', moon);
+  face.innerHTML = moonSVG();
+
+  // 지붕, 벽, 불 켜진 창문
+  sc.insertAdjacentHTML('beforeend', `<svg class="full" width="${W}" height="${H}" aria-hidden="true">`
+    + `<rect x="${cxs - RW * 0.38}" y="${roofBase - 2}" width="${RW * 0.76}" height="${H - roofBase + 4}" fill="#E6DACB"/>`
+    + `<rect x="${cxs - RW * 0.08}" y="${roofBase + (H - roofBase) * 0.25}" width="${RW * 0.16}" height="${(H - roofBase) * 0.5}" rx="4" fill="#F3DFA6"/>`
+    + `<path d="M${cxs - RW / 2} ${roofBase} L${cxs} ${roofTop} L${cxs + RW / 2} ${roofBase} Z" fill="${ROOFS[p.stage % ROOFS.length][0]}"/>`
+    + `<path d="M${cxs - RW * 0.4} ${roofBase} L${cxs} ${roofTop + RH * 0.2} L${cxs + RW * 0.4} ${roofBase}" stroke="${ROOFS[p.stage % ROOFS.length][1]}" stroke-width="3" fill="none"/></svg>`);
+
+  // 지붕 위 고양이 두 마리
+  const C = M * 0.48;
+  const cats = [-0.3, 0.3].map(dx => {
+    const x = cxs + dx * RW;
+    const c = box(sc, x, slopeY(x) - C * 0.38, C, C, 'roofCat');
+    c.appendChild(animal('cat'));
+    onTap(c, () => { play(c.firstChild, 'wiggle'); sfx.tok(); say(rand(['야옹, 고양이도 달님 기다려요', '고양이 두 마리가 지붕 위에 있네'])); });
+    return c;
+  });
+  const catsDo = cls => cats.forEach((c, i) => later(() => play(c.firstChild, cls), i * 250));
+
+  // 1) 달님이 올라옴: 누를 때마다 3분의 1씩, 한 번에 1.6초 동안 천천히
+  let step = 0, moving = false, phase = 'rise';
+  const moveMoon = y => { const t = `translateY(${y - moonDown}px)`; moon.style.transform = t; halo.style.transform = t; };
+  function rise() {
+    if (phase !== 'rise' || moving) return;
+    moving = true; step++;
+    moveMoon(moonDown + (moonUp - moonDown) * step / 3);
+    sfx.peek();
+    say(step < 3 ? '달님이 나오나 봐요. 영차, 영차' : '와, 달님이 나왔다!');
+    later(() => {
+      moving = false;
+      if (step < 3) return;
+      phase = 'up';
+      moon.classList.add('awake'); halo.classList.add('on'); sfx.light();
+      catsDo('wave');
+      later(() => { say('달님, 안녕하세요!'); }, 1200);
+      later(cloudIn, 3400);
+    }, 1700);
+  }
+  onTap(skyLayer, rise);
+  onTap(moon, () => {
+    if (phase === 'rise') return rise();
+    if (phase === 'up' || phase === 'bye') { play(face, 'wiggle'); sfx.boop(); }
+  });
+  // 지붕을 눌러도 달님이 올라옴
+  sc.addEventListener('pointerdown', e => { e.preventDefault(); if (e.target.closest('.roofCat, .cloudman, .homeBtn')) return; rise(); });
+
+  // 2) 구름 아저씨: 오른쪽에서 빼꼼 → 누르면 달님을 가림 → 다시 누르면 비켜 줌
+  const CW = M * 1.6, CH = CW * 0.62;
+  const cloud = box(sc, W + CW * 0.05, moonUp + M * 0.05, CW, CH, 'cloudman');
+  cloud.innerHTML = `<div class="face">${CLOUD_SVG}</div>`;
+  const moveCloud = (x, ms) => { cloud.style.transitionDuration = ms + 'ms'; cloud.style.transform = `translateX(${x - (W + CW * 0.05)}px)`; };
+  moveCloud(W + CW * 0.9, 0);
+  function cloudIn() {
+    phase = 'peek';
+    moveCloud(W + CW * 0.05, 2200);
+    sfx.blub();
+    say('어? 누가 왔을까? 구름 아저씨네');
+  }
+  onTap(cloud, () => {
+    if (phase === 'peek') {
+      phase = 'cover';
+      moveCloud(cxs, 3200); sfx.blub();
+      later(() => { say('아이, 구름 아저씨! 달님이 안 보여요'); catsDo('nudge'); }, 2000);
+      later(() => { phase = 'covered'; say('구름 아저씨, 비켜 주세요'); }, 4600);
+    } else if (phase === 'covered') {
+      phase = 'leave';
+      play(cloud.firstChild, 'wiggle'); sfx.boop();
+      moveCloud(-CW * 0.7, 3600);
+      later(() => { say('구름 아저씨가 비켜 줬어요'); }, 1400);
+      later(() => {
+        phase = 'bye';
+        play(face, 'wave'); catsDo('wave'); sfx.light();
+        say(rand(['달님, 안녕!', '달님 안녕, 고양이도 안녕']));
+        if (p.stage + 1 < MOON_STAGES && !timeUp()) later(() => go(sceneMoon, { stage: p.stage + 1 }), 4200);
+        else later(() => go(sceneMap), 4200);
+      }, 3800);
+    } else if (phase === 'cover' || phase === 'leave') { /* 움직이는 중에는 무시 */ }
   });
 }
 
